@@ -47,18 +47,26 @@ namespace Mp3_File_Exporter
         {
             int skipCounter = 0;
             FileType = "*" + textBox3.Text;
-            string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
-            foreach (string file in files)
+            if (SourceFolder != null && DestinationFolder != null && FileType != null)
             {
-                string DestinationFile = DestinationFolder + "\\" + Path.GetFileName(file);
-                if(File.Exists(DestinationFile))
-                { skipCounter++; }
-                else
+                string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
+                foreach (string file in files)
                 {
-                    File.Copy(file, DestinationFile);
-                }               
+                    string DestinationFile = DestinationFolder + "\\" + Path.GetFileName(file);
+                    if (File.Exists(DestinationFile))
+                    { skipCounter++; }
+                    else
+                    {
+                        File.Copy(file, DestinationFile);
+                    }
+                }
+                MessageBox.Show($"{(files.Length - skipCounter).ToString()} of {files.Length} files copied.");
             }
-            MessageBox.Show($"{(files.Length - skipCounter).ToString()} out of {files.Length} files copied.");
+            else
+            {
+                MessageBox.Show("Error", "Please select a source folder, a destination folder, and a file type");
+            }
+            
         }
 
     }
