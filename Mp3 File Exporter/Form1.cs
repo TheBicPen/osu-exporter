@@ -14,8 +14,9 @@ namespace Mp3_File_Exporter
     public partial class Form1 : Form
     {
 
-      string SourceFolder;
-      string DestinationFolder;
+        string SourceFolder;
+        string DestinationFolder;
+        string FileType = "*.mp3";
 
         public Form1()
         {
@@ -44,7 +45,7 @@ namespace Mp3_File_Exporter
 
         private void button3_Click(object sender, EventArgs e)
         {
-            string[] files = Directory.GetFiles(SourceFolder);
+            string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
             foreach (string file in files)
             {
                 string DestinationFile = DestinationFolder + "\\" + Path.GetFileName(file);
