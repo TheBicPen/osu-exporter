@@ -45,12 +45,21 @@ namespace Mp3_File_Exporter
 
         private void button3_Click(object sender, EventArgs e)
         {
+            int skipCounter = 0;
+            FileType = "*" + textBox3.Text;
             string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
             foreach (string file in files)
             {
                 string DestinationFile = DestinationFolder + "\\" + Path.GetFileName(file);
-                File.Copy(file, DestinationFile);
+                if(File.Exists(DestinationFile))
+                { skipCounter++; }
+                else
+                {
+                    File.Copy(file, DestinationFile);
+                }               
             }
+            MessageBox.Show("{0} Files copied.", (files.Length - skipCounter).ToString());
         }
+
     }
 }
