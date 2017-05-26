@@ -58,7 +58,7 @@ namespace Mp3_File_Exporter
                     File.Copy(file, DestinationFile);
                 }               
             }
-            MessageBox.Show("{0} Files copied.", (files.Length - skipCounter).ToString());
+            MessageBox.Show($"{(files.Length - skipCounter).ToString()} out of {files.Length} files copied.");
         }
 
     }
