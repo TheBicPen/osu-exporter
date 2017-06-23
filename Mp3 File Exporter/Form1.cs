@@ -45,22 +45,43 @@ namespace Mp3_File_Exporter
 
         private void button3_Click(object sender, EventArgs e)
         {
+            int fileCounter = 0;
             int skipCounter = 0;
             FileType = "*" + textBox3.Text;
             if (SourceFolder != null && DestinationFolder != null && FileType != null)
             {
                 string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
-                foreach (string file in files)
+                fileCounter = files.Length;
+                progressBar1.Maximum = fileCounter;
+                if (fileCounter >= 1000)
                 {
-                    string DestinationFile = DestinationFolder + "\\" + Path.GetFileName(file);
-                    if (File.Exists(DestinationFile))
-                    { skipCounter++; }
-                    else
+                    DialogResult result;
+                    result = MessageBox.Show($"There are {fileCounter} files of the type {FileType} in this folder! \r\n Continue?", "Large number of files", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+                    if (result == DialogResult.OK)
                     {
-                        File.Copy(file, DestinationFile);
+                        fileCounter = 0;
+                        foreach (string file in files)
+                        {
+                            string DestinationFile = DestinationFolder + "\\" + Path.GetFileName(file);
+                            progressBar1.Value = fileCounter;
+                            if (File.Exists(DestinationFile))
+                            {
+                                skipCounter++;
+                                fileCounter++;
+                            }
+                            else
+                            {
+                                File.Copy(file, DestinationFile);
+                                fileCounter++;
+                            }
+                        }
+                        progressBar1.Value = 0;
+                        MessageBox.Show($"{(files.Length - skipCounter).ToString()} of {files.Length} files copied.");
                     }
+                    else
+                    { }
+                    
                 }
-                MessageBox.Show($"{(files.Length - skipCounter).ToString()} of {files.Length} files copied.");
             }
             else
             {
