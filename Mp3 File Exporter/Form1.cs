@@ -45,9 +45,15 @@ namespace Mp3_File_Exporter
 
         private void button3_Click(object sender, EventArgs e)
         {
+            FileType = "*" + textBox3.Text;
+            CopyFiles(SourceFolder, DestinationFolder, FileType);
+        }
+
+        private void CopyFiles(string SourceFolder, string DestinationFolder, string FileType)
+        {
             int fileCounter = 0;
             int skipCounter = 0;
-            FileType = "*" + textBox3.Text;
+
             if (SourceFolder != null && DestinationFolder != null && FileType != null)
             {
                 string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
@@ -80,15 +86,13 @@ namespace Mp3_File_Exporter
                     }
                     else
                     { }
-                    
+
                 }
             }
             else
             {
                 MessageBox.Show("Error", "Please select a source folder, a destination folder, and a file type");
             }
-            
         }
-
     }
 }
