@@ -196,10 +196,20 @@ namespace Mp3_File_Exporter
             return counter;
         }
 
+        public string GetSafeFilename(string fileName)
+        {
+            return string.Join("_", fileName.Split(Path.GetInvalidFileNameChars()));
+        }
 
-        private bool CopyFile(string sourceFile, string fileName)
+        public string GetSafePathname(string pathName)
+        {
+            return string.Join("_", pathName.Split(Path.GetInvalidPathChars()));
+        }
+
+        public bool CopyFile(string sourceFile, string fileName)
         {
             string DestinationFile = Path.Combine(DestinationFolder, fileName);
+            DestinationFile = GetSafePathname(DestinationFile);
             if (File.Exists(DestinationFile))
             {
                 bool overwrite = PromptOverwrite();
