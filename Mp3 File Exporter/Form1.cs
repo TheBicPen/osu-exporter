@@ -17,6 +17,7 @@ namespace Mp3_File_Exporter
         string SourceFolder;
         string DestinationFolder;
         string FileType = "*.mp3";
+        int mode = 1;
 
         public Form1()
         {
@@ -47,47 +48,71 @@ namespace Mp3_File_Exporter
         private void button3_Click(object sender, EventArgs e)
         {
             FileType = "*" + textBox3.Text;
-            CopyFiles(SourceFolder, DestinationFolder, FileType);
+            CopyFiles(SourceFolder, DestinationFolder, FileType, mode);
         }
 
-        private void CopyFiles(string SourceFolder, string DestinationFolder, string FileType)
+        private void CopyFiles(string SourceFolder, string DestinationFolder, string FileType, int mode)
         {
             int fileCounter = 0;
             int skipCounter = 0;
 
             if (SourceFolder != null && DestinationFolder != null && FileType != null)
             {
-                string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
-                fileCounter = files.Length;
-                progressBar1.Maximum = fileCounter;
-                if (fileCounter >= 1000)
+                if (mode == 1)
                 {
-                    DialogResult result;
-                    result = MessageBox.Show($"There are {fileCounter} files of the type {FileType} in this folder! \r\n Continue?", "Large number of files", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
-                    if (result == DialogResult.OK)
+                    string[] folders = Directory.GetDirectories(SourceFolder);
+                    foreach (string folder in folders)
                     {
-                        fileCounter = 0;
-                        foreach (string file in files)
-                        {
-                            string DestinationFile = DestinationFolder + "\\" + Path.GetFileName(file);
-                            progressBar1.Value = fileCounter;
-                            if (File.Exists(DestinationFile))
+                        string songFolder = Path.Combine(SourceFolder, folder);
+                        string[] textFiles = Directory.GetFiles(songFolder, "*.osu");
+                        string textFile = textFiles[0];
+                            using (StreamReader textReader = new StreamReader(textFile))
                             {
-                                skipCounter++;
-                                fileCounter++;
-                            }
-                            else
-                            {
-                                File.Copy(file, DestinationFile);
-                                fileCounter++;
-                            }
-                        }
-                        progressBar1.Value = 0;
-                        MessageBox.Show($"{(files.Length - skipCounter).ToString()} of {files.Length} files copied.");
-                    }
-                    else
-                    { }
+                                string line;
+                                do
+                                {
+                                    line = textReader.ReadLine();
+                                } while (line != "[Metadata]");
 
+                            }
+                    }
+                }
+
+
+                else if (mode == 2 || mode == 3)
+                {
+                    string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
+                    fileCounter = files.Length;
+                    progressBar1.Maximum = fileCounter;
+                    if (fileCounter >= 1000)
+                    {
+                        DialogResult result;
+                        result = MessageBox.Show($"There are {fileCounter} files of the type {FileType} in this folder! \r\n Continue?", "Large number of files", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+                        if (result == DialogResult.OK)
+                        {
+                            fileCounter = 0;
+                            foreach (string file in files)
+                            {
+                                string DestinationFile = DestinationFolder + "\\" + Path.GetFileName(file);
+                                progressBar1.Value = fileCounter;
+                                if (File.Exists(DestinationFile))
+                                {
+                                    skipCounter++;
+                                    fileCounter++;
+                                }
+                                else
+                                {
+                                    File.Copy(file, DestinationFile);
+                                    fileCounter++;
+                                }
+                            }
+                            progressBar1.Value = 0;
+                            MessageBox.Show($"{(files.Length - skipCounter).ToString()} of {files.Length} files copied.");
+                        }
+                        else
+                        { }
+
+                    }
                 }
             }
             else
@@ -101,9 +126,9 @@ namespace Mp3_File_Exporter
             ChangeMode(1);
         }
 
-        private void ChangeMode(int radioButtonNumber)
+        private void ChangeMode(int mode)
         {
-            switch (radioButtonNumber)
+            switch (mode)
             {
                 case 1: 
                     {
