@@ -198,7 +198,19 @@ namespace Mp3_File_Exporter
 
         public string GetSafeFilename(string fileName)
         {
-            return string.Join("_", fileName.Split(Path.GetInvalidFileNameChars()));
+            char[] illegal = new char[50];
+            illegal = Path.GetInvalidFileNameChars();
+            int counter = illegal.Count();
+
+            illegal[counter + 1] = '\"';
+            illegal[counter + 2] = '<';
+            illegal[counter + 3] = '>';
+            illegal[counter + 4] = '|';
+            illegal[counter + 5] = '\b';
+            illegal[counter + 6] = '\0';
+            illegal[counter + 7] = '\t';
+
+            return string.Join("_", fileName.Split(illegal));
         }
 
         public string GetSafePathname(string pathName)
@@ -209,7 +221,7 @@ namespace Mp3_File_Exporter
         public bool CopyFile(string sourceFile, string fileName)
         {
             string DestinationFile = Path.Combine(DestinationFolder, fileName);
-            DestinationFile = GetSafePathname(DestinationFile);
+            DestinationFile = GetSafePathname(GetSafeFilename(DestinationFile));
             if (File.Exists(DestinationFile))
             {
                 bool overwrite = PromptOverwrite();
