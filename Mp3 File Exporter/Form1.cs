@@ -122,9 +122,14 @@ namespace Mp3_File_Exporter
                 else if (mode == 2 || mode == 3)
                 {
                     string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
-                    CopyFiles(files);
+                    int[] counter = new int[1];
+                    counter = CopyFiles(files);
+                    fileCounter = counter[0];
+                    skipCounter = counter[1];
+
                 }
-                MessageBox.Show("Done!");
+               // MessageBox.Show("Done!");
+                MessageBox.Show($"{(fileCounter - skipCounter).ToString()} of {fileCounter} files copied.");
             }
             else
             {
@@ -157,37 +162,38 @@ namespace Mp3_File_Exporter
             else { return false; }
         }
 
-        private void CopyFiles(string[] files)
+        private int[] CopyFiles(string[] files)
         {
-            int skipCounter = 0;
-            int fileCounter = files.Length;
-            progressBar1.Maximum = fileCounter;
+            int[] counter = new int[1];
+            counter[0] = files.Length;
+            progressBar1.Maximum = counter[0];
 
-            bool TooMany = ManyFiles(fileCounter);
+            bool TooMany = ManyFiles(counter[0]);
             if (TooMany == true)
             { }
             else if (TooMany == false)
             {
-                fileCounter = 0;
+                counter[0] = 0;
                 foreach (string file in files)
                 {
                     string DestinationFile = DestinationFolder + "\\" + Path.GetFileName(file);
-                    progressBar1.Value = fileCounter;
+                    progressBar1.Value = counter[0];
                     if (File.Exists(DestinationFile))
                     {
-                        skipCounter++;
-                        fileCounter++;
+                        counter[1]++; //skipcounter
+                        counter[0]++; //filecounter
                     }
                     else
                     {
                         File.Copy(file, DestinationFile);
-                        fileCounter++;
+                        counter[0]++;
                     }
                 }
                 progressBar1.Value = 0;
-                MessageBox.Show($"{(files.Length - skipCounter).ToString()} of {files.Length} files copied.");
+              //  {(counter[0] - counter[1]).ToString()} of {counter[0]} files copied."); //former messagebox
             }
             else { throw new GenericException(); }
+            return counter;
         }
 
 
