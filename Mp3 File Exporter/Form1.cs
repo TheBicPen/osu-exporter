@@ -21,6 +21,7 @@ namespace Mp3_File_Exporter
         public Form1()
         {
             InitializeComponent();
+            ChangeMode(1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -93,6 +94,56 @@ namespace Mp3_File_Exporter
             {
                 MessageBox.Show("Error", "Please select a source folder, a destination folder, and a file type");
             }
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            ChangeMode(1);
+        }
+
+        private void ChangeMode(int radioButtonNumber)
+        {
+            switch (radioButtonNumber)
+            {
+                case 1: 
+                    {
+                        button1.Text = "osu! Songs folder";
+                        label1.Hide();
+                        textBox3.Hide();
+                        checkBox1.Show();
+                        break;
+                    }
+                case 2:
+                    {
+                        button1.Text = "Source folder";
+                        label1.Show();
+                        textBox3.Show();
+                        checkBox1.Hide();
+                        break;
+                    }
+                case 3:
+                    {
+                        button1.Text = "Source folder";
+                        label1.Show();
+                        textBox3.Show();
+                        checkBox1.Hide();
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            ChangeMode(2);
+        }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+            ChangeMode(3);
         }
     }
 }
