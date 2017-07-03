@@ -82,7 +82,7 @@ namespace Mp3_File_Exporter
                                     }
                                     else if (line.Contains("Title:"))
                                     {
-                                        metadata[0] = line;        
+                                        metadata[0] = line;
                                     }
 
                                     else if (line.Contains("Artist:"))
@@ -104,7 +104,9 @@ namespace Mp3_File_Exporter
 
                             }
                         file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
-                        bool fileCopied = CopyFile(file);
+                        metadata[0] = metadata[0].Remove(0, "Title:".ToCharArray().Length);
+                        string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
+                        bool fileCopied = CopyFile(file, fileName);
                         if (fileCopied == true)
                         { fileCounter++; }
                         else if (fileCopied == false)
@@ -119,6 +121,7 @@ namespace Mp3_File_Exporter
                     string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
                     CopyFiles(files);
                 }
+                MessageBox.Show("Done!");
             }
             else
             {
@@ -178,9 +181,9 @@ namespace Mp3_File_Exporter
         }
 
 
-        private bool CopyFile(string sourceFile)
+        private bool CopyFile(string sourceFile, string fileName)
         {
-            string DestinationFile = Path.Combine(DestinationFolder, Path.GetFileName(sourceFile));
+            string DestinationFile = Path.Combine(DestinationFolder, fileName);
             if (File.Exists(DestinationFile))
             {
                 bool overwrite = PromptOverwrite();
