@@ -83,16 +83,19 @@ namespace Mp3_File_Exporter
                                     else if (line.Contains("Title:"))
                                     {
                                         metadata[0] = line;
+                                        metadata[0] = metadata[0].Remove(0, "Title:".ToCharArray().Length);
                                     }
 
                                     else if (line.Contains("Artist:"))
                                     {
                                         metadata[1] = line;
+                                        metadata[1] = metadata[1].Remove(0, "Artist:".ToCharArray().Length);
                                     }
 
                                     else if (line.Contains("Creator:"))
                                     {
                                         metadata[2] = line;
+                                        metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length);
                                     }
 
                                     else if (line.Contains("Tags:"))
@@ -104,7 +107,6 @@ namespace Mp3_File_Exporter
 
                             }
                         file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
-                        metadata[0] = metadata[0].Remove(0, "Title:".ToCharArray().Length);
                         string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
                         bool fileCopied = CopyFile(file, fileName);
                         if (fileCopied == true)
@@ -125,7 +127,7 @@ namespace Mp3_File_Exporter
             }
             else
             {
-                MessageBox.Show("Error", "Please select a source folder, a destination folder, and a file type");
+                MessageBox.Show("Please select a source folder, a destination folder, and a file type", "Error");
             }
         }
 
