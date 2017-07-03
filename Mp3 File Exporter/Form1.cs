@@ -68,11 +68,32 @@ namespace Mp3_File_Exporter
                         string textFile = textFiles[0];
                             using (StreamReader textReader = new StreamReader(textFile))
                             {
+                                string[] metadata = new string[4]; //title, artist, beatmap creator, tags
                                 string line;
                                 do
                                 {
                                     line = textReader.ReadLine();
-                                } while (line != "[Metadata]");
+                                    if (line.Contains("Title:"))
+                                    {
+                                        metadata[0] = line;        
+                                    }
+
+                                    else if (line.Contains("Artist:"))
+                                    {
+                                        metadata[1] = line;
+                                    }
+
+                                    else if (line.Contains("Creator:"))
+                                    {
+                                        metadata[2] = line;
+                                    }
+
+                                    else if (line.Contains("Tags:"))
+                                    {
+                                        metadata[3] = line;
+                                    }
+
+                                } while (line != "[Difficulty]");
 
                             }
                     }
