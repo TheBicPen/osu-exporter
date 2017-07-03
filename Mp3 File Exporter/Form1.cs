@@ -54,8 +54,6 @@ namespace Mp3_File_Exporter
         private void FindFiles(string SourceFolder, string DestinationFolder, string FileType, int mode)
         {
 
-
-
             if (SourceFolder != null && DestinationFolder != null && FileType != null)
             {
                 if (mode == 1)
@@ -66,14 +64,19 @@ namespace Mp3_File_Exporter
                         string songFolder = Path.Combine(SourceFolder, folder);
                         string[] textFiles = Directory.GetFiles(songFolder, "*.osu");
                         string textFile = textFiles[0];
-                            using (StreamReader textReader = new StreamReader(textFile))
+                        string[] metadata = new string[4]; //title, artist, beatmap creator, tags
+                        string line;
+                        string file = "";
+                        using (StreamReader textReader = new StreamReader(textFile))
                             {
-                                string[] metadata = new string[4]; //title, artist, beatmap creator, tags
-                                string line;
                                 do
                                 {
                                     line = textReader.ReadLine();
-                                    if (line.Contains("Title:"))
+                                    if (line.Contains("Audio Filename:"))
+                                    {
+                                        file = line;
+                                    }
+                                    else if (line.Contains("Title:"))
                                     {
                                         metadata[0] = line;        
                                     }
@@ -96,7 +99,7 @@ namespace Mp3_File_Exporter
                                 } while (line != "[Difficulty]");
 
                             }
-
+                        CopyFile(file);
                     }
                 }
 
@@ -154,6 +157,24 @@ namespace Mp3_File_Exporter
             }
         }
 
+
+        private bool CopyFile(string sourceFile)
+        {
+            string DestinationFile = Path.Combine(DestinationFolder, Path.GetFileName(sourceFile));
+            if (File.Exists(DestinationFile))
+            {
+                return false;
+            }
+
+            else if (!File.Exists(DestinationFile))
+            {
+                File.Copy(sourceFile, DestinationFile);
+                return true;
+            }
+            else
+            { throw new GenericException(); }
+        }
+
         private void ChangeMode(int mode)
         {
             switch (mode)
@@ -199,4 +220,13 @@ namespace Mp3_File_Exporter
             ChangeMode(3);
         }
     }
+
+    public class GenericException : Exception
+    {
+        public GenericException()
+        {
+            MessageBox.Show("Whoops.. An Error Occurred!");
+        }
+    }
+
 }
