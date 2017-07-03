@@ -99,6 +99,7 @@ namespace Mp3_File_Exporter
                                 } while (line != "[Difficulty]");
 
                             }
+                        file.Remove("Audio Filename:".ToCharArray().Length);
                         CopyFile(file);
                     }
                 }
