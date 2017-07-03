@@ -141,41 +141,52 @@ namespace Mp3_File_Exporter
             else { throw new GenericException(); }
         }
 
+        private bool ManyFiles(int fileCounter)
+        {
+            if (fileCounter >= 1000)
+            {
+                DialogResult result;
+                result = MessageBox.Show($"There are {fileCounter} files of the type {FileType} in this folder! \r\n Continue?", "Large number of files", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+                if (result == DialogResult.OK)
+                { return false; }
+                else if (result == DialogResult.Cancel)
+                { return true; }
+                else { throw new GenericException(); }
+            }
+            else { return false; }
+        }
 
         private void CopyFiles(string[] files)
         {
             int skipCounter = 0;
             int fileCounter = files.Length;
             progressBar1.Maximum = fileCounter;
-            if (fileCounter >= 1000)
-            {
-                DialogResult result;
-                result = MessageBox.Show($"There are {fileCounter} files of the type {FileType} in this folder! \r\n Continue?", "Large number of files", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
-                if (result == DialogResult.OK)
-                {
-                    fileCounter = 0;
-                    foreach (string file in files)
-                    {
-                        string DestinationFile = DestinationFolder + "\\" + Path.GetFileName(file);
-                        progressBar1.Value = fileCounter;
-                        if (File.Exists(DestinationFile))
-                        {
-                            skipCounter++;
-                            fileCounter++;
-                        }
-                        else
-                        {
-                            File.Copy(file, DestinationFile);
-                            fileCounter++;
-                        }
-                    }
-                    progressBar1.Value = 0;
-                    MessageBox.Show($"{(files.Length - skipCounter).ToString()} of {files.Length} files copied.");
-                }
-                else
-                { }
 
+            bool TooMany = ManyFiles(fileCounter);
+            if (TooMany == true)
+            { }
+            else if (TooMany == false)
+            {
+                fileCounter = 0;
+                foreach (string file in files)
+                {
+                    string DestinationFile = DestinationFolder + "\\" + Path.GetFileName(file);
+                    progressBar1.Value = fileCounter;
+                    if (File.Exists(DestinationFile))
+                    {
+                        skipCounter++;
+                        fileCounter++;
+                    }
+                    else
+                    {
+                        File.Copy(file, DestinationFile);
+                        fileCounter++;
+                    }
+                }
+                progressBar1.Value = 0;
+                MessageBox.Show($"{(files.Length - skipCounter).ToString()} of {files.Length} files copied.");
             }
+            else { throw new GenericException(); }
         }
 
 
