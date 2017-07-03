@@ -205,9 +205,9 @@ namespace Mp3_File_Exporter
             { throw new GenericException(); }
         }
 
-        private void ChangeMode(int mode)
+        private void ChangeMode(int Mode1)
         {
-            switch (mode)
+            switch (Mode1)
             {
                 case 1: 
                     {
