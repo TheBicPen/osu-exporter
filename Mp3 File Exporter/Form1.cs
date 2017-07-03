@@ -141,10 +141,6 @@ namespace Mp3_File_Exporter
             else { throw new GenericException(); }
         }
 
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-            ChangeMode(1);
-        }
 
         private void CopyFiles(string[] files)
         {
@@ -215,6 +211,7 @@ namespace Mp3_File_Exporter
             {
                 case 1: 
                     {
+                        mode = 1;
                         button1.Text = "osu! Songs folder";
                         label1.Hide();
                         textBox3.Hide();
@@ -223,6 +220,7 @@ namespace Mp3_File_Exporter
                     }
                 case 2:
                     {
+                        mode = 2;
                         button1.Text = "Source folder";
                         label1.Show();
                         textBox3.Show();
@@ -231,6 +229,7 @@ namespace Mp3_File_Exporter
                     }
                 case 3:
                     {
+                        mode = 3;
                         button1.Text = "Source folder";
                         label1.Show();
                         textBox3.Show();
@@ -242,6 +241,11 @@ namespace Mp3_File_Exporter
                         break;
                     }
             }
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            ChangeMode(1);
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
