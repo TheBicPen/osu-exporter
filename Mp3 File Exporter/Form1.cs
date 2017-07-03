@@ -122,7 +122,7 @@ namespace Mp3_File_Exporter
                 else if (mode == 2 || mode == 3)
                 {
                     string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
-                    int[] counter = new int[1];
+                    int[] counter = new int[2];
                     counter = CopyFiles(files);
                     fileCounter = counter[0];
                     skipCounter = counter[1];
@@ -164,7 +164,7 @@ namespace Mp3_File_Exporter
 
         private int[] CopyFiles(string[] files)
         {
-            int[] counter = new int[1];
+            int[] counter = new int[2];
             counter[0] = files.Length;
             progressBar1.Maximum = counter[0];
 
