@@ -23,6 +23,7 @@ namespace Mp3_File_Exporter
         {
             InitializeComponent();
             ChangeMode(1);
+            radioButton2.Hide(); // currently does nothing
         }
 
         private void button1_Click(object sender, EventArgs e)
