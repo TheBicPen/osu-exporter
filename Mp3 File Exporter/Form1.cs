@@ -53,12 +53,16 @@ namespace Mp3_File_Exporter
 
         private void FindFiles(string SourceFolder, string DestinationFolder, string FileType, int mode)
         {
+            int skipCounter = 0;
+            int fileCount = 0;
+            int fileCounter = 0;
 
             if (SourceFolder != null && DestinationFolder != null && FileType != null)
             {
                 if (mode == 1)
                 {
                     string[] folders = Directory.GetDirectories(SourceFolder);
+                    fileCount = folders.Length;
                     foreach (string folder in folders)
                     {
                         string songFolder = Path.Combine(SourceFolder, folder);
@@ -72,7 +76,7 @@ namespace Mp3_File_Exporter
                                 do
                                 {
                                     line = textReader.ReadLine();
-                                    if (line.Contains("Audio Filename:"))
+                                    if (line.Contains("AudioFilename:"))
                                     {
                                         file = line;
                                     }
@@ -99,8 +103,13 @@ namespace Mp3_File_Exporter
                                 } while (line != "[Difficulty]");
 
                             }
-                        file.Remove("Audio Filename:".ToCharArray().Length);
-                        CopyFile(file);
+                        file.Remove(0, "Audio Filename:".ToCharArray().Length);
+                        bool fileCopied = CopyFile(file);
+                        if (fileCopied == true)
+                        { fileCounter++; }
+                        else if (fileCopied == false)
+                        { skipCounter++; }
+                        else { throw new GenericException(); }
                     }
                 }
 
@@ -115,6 +124,16 @@ namespace Mp3_File_Exporter
             {
                 MessageBox.Show("Error", "Please select a source folder, a destination folder, and a file type");
             }
+        }
+
+        private bool PromptOverwrite()
+        {
+            DialogResult result = MessageBox.Show("This file already exists in the destination folder.\r\n Overwrite the file?", "", MessageBoxButtons.YesNo);
+            if (result == DialogResult.Yes)
+            { return true; }
+            else if (result == DialogResult.No)
+            { return false; }
+            else { throw new GenericException(); }
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
@@ -164,7 +183,16 @@ namespace Mp3_File_Exporter
             string DestinationFile = Path.Combine(DestinationFolder, Path.GetFileName(sourceFile));
             if (File.Exists(DestinationFile))
             {
-                return false;
+                bool overwrite = PromptOverwrite();
+                if (overwrite == true)
+                {
+                    File.Copy(sourceFile, DestinationFile);
+                    return true;
+                }
+                else if (overwrite == false)
+                { return false; }
+                else { throw new GenericException(); }
+
             }
 
             else if (!File.Exists(DestinationFile))
