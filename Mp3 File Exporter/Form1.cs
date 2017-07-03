@@ -103,7 +103,7 @@ namespace Mp3_File_Exporter
                                 } while (line != "[Difficulty]");
 
                             }
-                        file = file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1);
+                        file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
                         bool fileCopied = CopyFile(file);
                         if (fileCopied == true)
                         { fileCounter++; }
