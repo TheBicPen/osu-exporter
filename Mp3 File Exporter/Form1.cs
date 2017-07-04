@@ -18,6 +18,7 @@ namespace Mp3_File_Exporter
         string DestinationFolder;
         string FileType = "*.mp3";
         int mode = 1;
+       /* bool allowOverwrite = false; */
 
         public Form1()
         {
@@ -69,13 +70,15 @@ namespace Mp3_File_Exporter
                         string songFolder = Path.Combine(SourceFolder, folder);
                         string[] textFiles = Directory.GetFiles(songFolder, "*.osu");
                         string textFile;
-                        if (textFiles[0] != null) { textFile = textFiles[0]; }
-                        else { textFile = ""; }
-
                         string[] metadata = new string[4]; //title, artist, beatmap creator, tags
                         string line;
                         string file = "";
-                        using (StreamReader textReader = new StreamReader(textFile))
+                        if (textFiles.Length != 0)
+                        {
+                            textFile = textFiles[0];
+
+
+                            using (StreamReader textReader = new StreamReader(textFile))
                             {
                                 do
                                 {
@@ -110,14 +113,17 @@ namespace Mp3_File_Exporter
                                 } while (line != "[Difficulty]");
 
                             }
-                        file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
-                        string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
-                        bool fileCopied = CopyFile(file, fileName);
-                        if (fileCopied == true)
-                        { fileCounter++; }
-                        else if (fileCopied == false)
-                        { skipCounter++; }
-                        else { throw new GenericException(); }
+                            file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
+                            string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
+                            bool fileCopied = CopyFile(file, fileName);
+                            if (fileCopied == true)
+                            { fileCounter++; }
+                            else if (fileCopied == false)
+                            { skipCounter++; }
+                            else { throw new GenericException(); }
+                        }
+                        else { }
+
                     }
                 }
 
@@ -225,21 +231,21 @@ namespace Mp3_File_Exporter
         {
             fileName = GetSafePathname(GetSafeFilename(fileName));
             string DestinationFile = Path.Combine(DestinationFolder, fileName);
-            if (File.Exists(DestinationFile))
+            if (File.Exists(DestinationFile) /*&& allowOverwrite == false*/)
             {
-                bool overwrite = PromptOverwrite();
+               /* bool overwrite = PromptOverwrite();
                 if (overwrite == true)
                 {
-                    File.Copy(sourceFile, DestinationFile);
+                    File.Copy(sourceFile, DestinationFile); 
                     return true;
                 }
                 else if (overwrite == false)
-                { return false; }
-                else { throw new GenericException(); }
+              */  { return false; }
+               /* else { throw new GenericException(); } */
 
             }
 
-            else if (!File.Exists(DestinationFile))
+            else if (!File.Exists(DestinationFile) /*|| File.Exists(DestinationFile) && allowOverwrite == true*/)
             {
                 File.Copy(sourceFile, DestinationFile);
                 return true;
@@ -299,6 +305,11 @@ namespace Mp3_File_Exporter
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
             ChangeMode(3);
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+           /* allowOverwrite = checkBox1.Checked;*/
         }
     }
 
