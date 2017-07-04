@@ -58,6 +58,7 @@ namespace Mp3_File_Exporter
             int skipCounter = 0;
             int fileCount = 0;
             int fileCounter = 0;
+            int invalidFolders = 0;
 
             if (SourceFolder != null && DestinationFolder != null && FileType != null)
             {
@@ -122,7 +123,11 @@ namespace Mp3_File_Exporter
                             { skipCounter++; }
                             else { throw new GenericException(); }
                         }
-                        else { }
+                        else
+                        {
+                            invalidFolders++;
+                            fileCount--;
+                        }
 
                     }
                 }
@@ -130,15 +135,16 @@ namespace Mp3_File_Exporter
 
                 else if (mode == 2 || mode == 3)
                 {
+                    
                     string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
                     int[] counter = new int[2];
                     counter = CopyFiles(files);
-                    fileCounter = counter[0];
+                    fileCount = counter[0];
                     skipCounter = counter[1];
 
                 }
                // MessageBox.Show("Done!");
-                MessageBox.Show($"{(fileCounter - skipCounter).ToString()} of {fileCounter} files copied.");
+                MessageBox.Show($"{(fileCount - skipCounter).ToString()} of {fileCount} {FileType} files copied.\r\n{invalidFolders} invalid folders.");
             }
             else
             {
