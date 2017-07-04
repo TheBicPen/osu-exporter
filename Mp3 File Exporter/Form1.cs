@@ -144,7 +144,7 @@ namespace Mp3_File_Exporter
 
                 }
                // MessageBox.Show("Done!");
-                MessageBox.Show($"{(fileCount - skipCounter).ToString()} of {fileCount} {FileType} files copied.\r\n{invalidFolders} invalid folders.");
+                MessageBox.Show($"{(fileCount - skipCounter).ToString()} of {fileCount} files copied.\r\n{invalidFolders} invalid folders.");
             }
             else
             {
