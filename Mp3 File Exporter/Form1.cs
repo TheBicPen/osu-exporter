@@ -68,7 +68,10 @@ namespace Mp3_File_Exporter
                     {
                         string songFolder = Path.Combine(SourceFolder, folder);
                         string[] textFiles = Directory.GetFiles(songFolder, "*.osu");
-                        string textFile = textFiles[0];
+                        string textFile;
+                        if (textFiles[0] != null) { textFile = textFiles[0]; }
+                        else { textFile = ""; }
+
                         string[] metadata = new string[4]; //title, artist, beatmap creator, tags
                         string line;
                         string file = "";
@@ -202,13 +205,13 @@ namespace Mp3_File_Exporter
             illegal = Path.GetInvalidFileNameChars();
             int counter = illegal.Count();
 
-            illegal[counter + 1] = '\"';
+           /* illegal[counter + 1] = '\"';
             illegal[counter + 2] = '<';
             illegal[counter + 3] = '>';
             illegal[counter + 4] = '|';
             illegal[counter + 5] = '\b';
             illegal[counter + 6] = '\0';
-            illegal[counter + 7] = '\t';
+            illegal[counter + 7] = '\t'; */
 
             return string.Join("_", fileName.Split(illegal));
         }
@@ -220,8 +223,8 @@ namespace Mp3_File_Exporter
 
         public bool CopyFile(string sourceFile, string fileName)
         {
+            fileName = GetSafePathname(GetSafeFilename(fileName));
             string DestinationFile = Path.Combine(DestinationFolder, fileName);
-            DestinationFile = GetSafePathname(GetSafeFilename(DestinationFile));
             if (File.Exists(DestinationFile))
             {
                 bool overwrite = PromptOverwrite();
