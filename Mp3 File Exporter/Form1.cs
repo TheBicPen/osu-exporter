@@ -103,7 +103,7 @@ namespace Mp3_File_Exporter
                                     else if (line.Contains("Creator:"))
                                     {
                                         metadata[2] = line;
-                                        metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length);
+                                    //    metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length);
                                     }
 
                                     else if (line.Contains("Tags:"))
@@ -123,9 +123,15 @@ namespace Mp3_File_Exporter
                             {
 
 
+                                TagLib.File musicFile = TagLib.File.Create(newFile);
+                                musicFile.Tag.Title = metadata[0];
 
+                                musicFile.Tag.Performers = new string[1]; //can't be 1 for some reason
+                                musicFile.Tag.Performers[0] = metadata[1];
 
+                                musicFile.Tag.Comment = musicFile.Tag.Comment + metadata[2] + metadata[3];
 
+                                musicFile.Save();
 
 
                                 fileCounter++;
