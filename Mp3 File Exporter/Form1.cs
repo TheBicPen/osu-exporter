@@ -116,10 +116,22 @@ namespace Mp3_File_Exporter
                             }
                             file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
                             string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
-                            bool fileCopied = CopyFile(file, fileName);
-                            if (fileCopied == true)
-                            { fileCounter++; }
-                            else if (fileCopied == false)
+                            string newFile = CopyFile(file, fileName);
+
+
+                            if (newFile != null)
+                            {
+
+
+
+
+
+
+
+                                fileCounter++;
+                            }
+
+                            else if (newFile == null)
                             { skipCounter++; }
                             else { throw new GenericException(); }
                         }
@@ -233,7 +245,7 @@ namespace Mp3_File_Exporter
             return string.Join("_", pathName.Split(Path.GetInvalidPathChars()));
         }
 
-        public bool CopyFile(string sourceFile, string fileName)
+        public string CopyFile(string sourceFile, string fileName)
         {
             fileName = GetSafePathname(GetSafeFilename(fileName));
             string DestinationFile = Path.Combine(DestinationFolder, fileName);
@@ -246,7 +258,7 @@ namespace Mp3_File_Exporter
                     return true;
                 }
                 else if (overwrite == false)
-              */  { return false; }
+              */  { return DestinationFile = null; }
                /* else { throw new GenericException(); } */
 
             }
@@ -254,7 +266,7 @@ namespace Mp3_File_Exporter
             else if (!File.Exists(DestinationFile) /*|| File.Exists(DestinationFile) && allowOverwrite == true*/)
             {
                 File.Copy(sourceFile, DestinationFile);
-                return true;
+                return DestinationFile;
             }
             else
             { throw new GenericException(); }
