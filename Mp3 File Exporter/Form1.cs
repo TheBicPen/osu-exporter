@@ -19,7 +19,6 @@ namespace Mp3_File_Exporter
         string FileType = "*.mp3";
         int mode = 1;
         /* bool allowOverwrite = false; */
-        string[] songInfo;
 
         public Form1()
         {
@@ -127,8 +126,6 @@ namespace Mp3_File_Exporter
 
                                 TagLib.File musicFile = TagLib.File.Create(newFile);
 
-                                songInfo = musicFile.Tag.ToString;
-
                                 musicFile.Tag.Title = metadata[0];
                                 musicFile.Tag.Performers = new string[] { metadata[1] };
                                 musicFile.Tag.Comment = musicFile.Tag.Comment + metadata[2] + metadata[3];
@@ -170,10 +167,10 @@ namespace Mp3_File_Exporter
             }
         }
 
-        private bool NewPromptOverwrite(string newFile, string existingFile)
+        private bool NewPromptOverwrite(string[] newFileData, string[] existingFileData)
         {
-            Form2 Form2 = new Form2();
-         
+
+            return true;
         } 
 
         private bool PromptOverwrite()
