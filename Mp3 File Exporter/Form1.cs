@@ -18,6 +18,7 @@ namespace Mp3_File_Exporter
         string DestinationFolder;
         string FileType = "*.mp3";
         int mode = 1;
+       /* bool allowOverwrite = false; */
 
         public Form1()
         {
@@ -57,6 +58,7 @@ namespace Mp3_File_Exporter
             int skipCounter = 0;
             int fileCount = 0;
             int fileCounter = 0;
+            int invalidFolders = 0;
 
             if (SourceFolder != null && DestinationFolder != null && FileType != null)
             {
@@ -68,11 +70,16 @@ namespace Mp3_File_Exporter
                     {
                         string songFolder = Path.Combine(SourceFolder, folder);
                         string[] textFiles = Directory.GetFiles(songFolder, "*.osu");
-                        string textFile = textFiles[0];
+                        string textFile;
                         string[] metadata = new string[4]; //title, artist, beatmap creator, tags
                         string line;
                         string file = "";
-                        using (StreamReader textReader = new StreamReader(textFile))
+                        if (textFiles.Length != 0)
+                        {
+                            textFile = textFiles[0];
+
+
+                            using (StreamReader textReader = new StreamReader(textFile))
                             {
                                 do
                                 {
@@ -96,7 +103,7 @@ namespace Mp3_File_Exporter
                                     else if (line.Contains("Creator:"))
                                     {
                                         metadata[2] = line;
-                                        metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length);
+                                    //    metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length);
                                     }
 
                                     else if (line.Contains("Tags:"))
@@ -107,29 +114,50 @@ namespace Mp3_File_Exporter
                                 } while (line != "[Difficulty]");
 
                             }
-                        file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
-                        string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
-                        bool fileCopied = CopyFile(file, fileName);
-                        if (fileCopied == true)
-                        { fileCounter++; }
-                        else if (fileCopied == false)
-                        { skipCounter++; }
-                        else { throw new GenericException(); }
+                            file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
+                            string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
+                            string newFile = CopyFile(file, fileName);
+
+
+                            if (newFile != null)
+                            {
+
+
+                                TagLib.File musicFile = TagLib.File.Create(newFile);
+                                musicFile.Tag.Title = metadata[0];
+                                musicFile.Tag.Performers = new string[] { metadata[1] };
+                                musicFile.Tag.Comment = musicFile.Tag.Comment + metadata[2] + metadata[3];
+                                musicFile.Save();
+
+
+                                fileCounter++;
+                            }
+
+                            else if (newFile == null)
+                            { skipCounter++; }
+                            else { throw new GenericException(); }
+                        }
+                        else
+                        {
+                            invalidFolders++;
+                            fileCount--;
+                        }
+
                     }
                 }
 
 
                 else if (mode == 2 || mode == 3)
                 {
+                    
                     string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
                     int[] counter = new int[2];
                     counter = CopyFiles(files);
-                    fileCounter = counter[0];
+                    fileCount = counter[0];
                     skipCounter = counter[1];
 
                 }
-               // MessageBox.Show("Done!");
-                MessageBox.Show($"{(fileCounter - skipCounter).ToString()} of {fileCounter} files copied.");
+                MessageBox.Show($"{(fileCount - skipCounter).ToString()} of {fileCount} files copied.\r\n{invalidFolders} invalid folders.");
             }
             else
             {
@@ -196,28 +224,42 @@ namespace Mp3_File_Exporter
             return counter;
         }
 
-
-        private bool CopyFile(string sourceFile, string fileName)
+        public string GetSafeFilename(string fileName)
         {
+            char[] illegal = new char[50];
+            illegal = Path.GetInvalidFileNameChars();
+            int counter = illegal.Count();
+
+            return string.Join("_", fileName.Split(illegal));
+        }
+
+        public string GetSafePathname(string pathName)
+        {
+            return string.Join("_", pathName.Split(Path.GetInvalidPathChars()));
+        }
+
+        public string CopyFile(string sourceFile, string fileName)
+        {
+            fileName = GetSafePathname(GetSafeFilename(fileName));
             string DestinationFile = Path.Combine(DestinationFolder, fileName);
-            if (File.Exists(DestinationFile))
+            if (File.Exists(DestinationFile) /*&& allowOverwrite == false*/)
             {
-                bool overwrite = PromptOverwrite();
+               /* bool overwrite = PromptOverwrite();
                 if (overwrite == true)
                 {
-                    File.Copy(sourceFile, DestinationFile);
+                    File.Copy(sourceFile, DestinationFile); 
                     return true;
                 }
                 else if (overwrite == false)
-                { return false; }
-                else { throw new GenericException(); }
+              */  { return DestinationFile = null; }
+               /* else { throw new GenericException(); } */
 
             }
 
-            else if (!File.Exists(DestinationFile))
+            else if (!File.Exists(DestinationFile) /*|| File.Exists(DestinationFile) && allowOverwrite == true*/)
             {
                 File.Copy(sourceFile, DestinationFile);
-                return true;
+                return DestinationFile;
             }
             else
             { throw new GenericException(); }
@@ -274,6 +316,11 @@ namespace Mp3_File_Exporter
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
             ChangeMode(3);
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+           /* allowOverwrite = checkBox1.Checked;*/
         }
     }
 
