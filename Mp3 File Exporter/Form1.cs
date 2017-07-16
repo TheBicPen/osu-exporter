@@ -18,13 +18,15 @@ namespace Mp3_File_Exporter
         string DestinationFolder;
         string FileType = "*.mp3";
         int mode = 1;
-       /* bool allowOverwrite = false; */
+        /* bool allowOverwrite = false; */
+        string[] songInfo;
 
         public Form1()
         {
             InitializeComponent();
             ChangeMode(1);
             radioButton2.Hide(); // currently does nothing
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -124,6 +126,9 @@ namespace Mp3_File_Exporter
 
 
                                 TagLib.File musicFile = TagLib.File.Create(newFile);
+
+                                songInfo = musicFile.Tag.ToString;
+
                                 musicFile.Tag.Title = metadata[0];
                                 musicFile.Tag.Performers = new string[] { metadata[1] };
                                 musicFile.Tag.Comment = musicFile.Tag.Comment + metadata[2] + metadata[3];
@@ -164,6 +169,12 @@ namespace Mp3_File_Exporter
                 MessageBox.Show("Please select a source folder, a destination folder, and a file type", "Error");
             }
         }
+
+        private bool NewPromptOverwrite(string newFile, string existingFile)
+        {
+            Form2 Form2 = new Form2();
+         
+        } 
 
         private bool PromptOverwrite()
         {
