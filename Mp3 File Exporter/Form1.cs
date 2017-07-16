@@ -167,10 +167,10 @@ namespace Mp3_File_Exporter
             }
         }
 
-        private bool NewPromptOverwrite(string[] newFileData, string[] existingFileData)
+        private string NewPromptOverwrite(string[] newFileData, string[] existingFileData)
         {
-
-            return true;
+            Form2 form2 = new Form2(newFileData, existingFileData);
+            return form2.result;
         } 
 
         private bool PromptOverwrite()
@@ -252,19 +252,12 @@ namespace Mp3_File_Exporter
             string DestinationFile = Path.Combine(DestinationFolder, fileName);
             if (File.Exists(DestinationFile) /*&& allowOverwrite == false*/)
             {
-               /* bool overwrite = PromptOverwrite();
-                if (overwrite == true)
-                {
-                    File.Copy(sourceFile, DestinationFile); 
-                    return true;
-                }
-                else if (overwrite == false)
-              */  { return DestinationFile = null; }
-               /* else { throw new GenericException(); } */
+               return DestinationFile = null;
+
 
             }
 
-            else if (!File.Exists(DestinationFile) /*|| File.Exists(DestinationFile) && allowOverwrite == true*/)
+            else if (!File.Exists(DestinationFile) )
             {
                 File.Copy(sourceFile, DestinationFile);
                 return DestinationFile;
