@@ -125,12 +125,8 @@ namespace Mp3_File_Exporter
 
                                 TagLib.File musicFile = TagLib.File.Create(newFile);
                                 musicFile.Tag.Title = metadata[0];
-
-                                musicFile.Tag.Performers = new string[1]; //can't be 1 for some reason
-                                musicFile.Tag.Performers[0] = metadata[1];
-
+                                musicFile.Tag.Performers = new string[] { metadata[1] };
                                 musicFile.Tag.Comment = musicFile.Tag.Comment + metadata[2] + metadata[3];
-
                                 musicFile.Save();
 
 
@@ -161,7 +157,6 @@ namespace Mp3_File_Exporter
                     skipCounter = counter[1];
 
                 }
-               // MessageBox.Show("Done!");
                 MessageBox.Show($"{(fileCount - skipCounter).ToString()} of {fileCount} files copied.\r\n{invalidFolders} invalid folders.");
             }
             else
@@ -234,14 +229,6 @@ namespace Mp3_File_Exporter
             char[] illegal = new char[50];
             illegal = Path.GetInvalidFileNameChars();
             int counter = illegal.Count();
-
-           /* illegal[counter + 1] = '\"';
-            illegal[counter + 2] = '<';
-            illegal[counter + 3] = '>';
-            illegal[counter + 4] = '|';
-            illegal[counter + 5] = '\b';
-            illegal[counter + 6] = '\0';
-            illegal[counter + 7] = '\t'; */
 
             return string.Join("_", fileName.Split(illegal));
         }
