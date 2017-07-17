@@ -117,12 +117,11 @@ namespace Mp3_File_Exporter
                             }
                             file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
                             string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
-                            string newFile = CopyFile(file, fileName);
+                            string newFile = CopyFile(file, fileName, false);
 
 
                             if (newFile != null)
                             {
-
 
                                 TagLib.File musicFile = TagLib.File.Create(newFile);
 
@@ -136,7 +135,13 @@ namespace Mp3_File_Exporter
                             }
 
                             else if (newFile == null)
-                            { skipCounter++; }
+                            {
+                                //skipCounter++;
+                                TagLib.File sourceFile = TagLib.File.Create(file);
+                                TagLib.File destFile = TagLib.File.Create(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))));
+
+                                NewPromptOverwrite(sourceFile.Tag.ToString(), destFile.Tag.ToString());
+                            }
                             else { throw new GenericException(); }
                         }
                         else
@@ -167,9 +172,10 @@ namespace Mp3_File_Exporter
             }
         }
 
-        private string NewPromptOverwrite(string[] newFileData, string[] existingFileData)
+        private string NewPromptOverwrite(string newFileData, string existingFileData)
         {
             Form2 form2 = new Form2(newFileData, existingFileData);
+            form2.ShowDialog();
             return form2.result;
         } 
 
@@ -246,18 +252,16 @@ namespace Mp3_File_Exporter
             return string.Join("_", pathName.Split(Path.GetInvalidPathChars()));
         }
 
-        public string CopyFile(string sourceFile, string fileName)
+        public string CopyFile(string sourceFile, string fileName, bool forceCopy)
         {
             fileName = GetSafePathname(GetSafeFilename(fileName));
             string DestinationFile = Path.Combine(DestinationFolder, fileName);
-            if (File.Exists(DestinationFile) /*&& allowOverwrite == false*/)
+            if (File.Exists(DestinationFile) && forceCopy == false)
             {
                return DestinationFile = null;
-
-
             }
 
-            else if (!File.Exists(DestinationFile) )
+            else if (!File.Exists(DestinationFile) || forceCopy)
             {
                 File.Copy(sourceFile, DestinationFile);
                 return DestinationFile;

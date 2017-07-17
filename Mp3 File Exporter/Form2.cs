@@ -14,7 +14,7 @@ namespace Mp3_File_Exporter
     {
         public string result;
 
-        public Form2(string[] newData, string[] oldData)
+        public Form2(string newData, string oldData)
         {
             InitializeComponent();
             //display data
