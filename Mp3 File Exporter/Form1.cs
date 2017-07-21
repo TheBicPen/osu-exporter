@@ -164,9 +164,9 @@ namespace Mp3_File_Exporter
                                         do
                                         {
                                             check = CopyFile(file, newName, false);
-                                            ApplyMetadata(check, metadata);
                                             counter++;
                                         } while (check == null);
+                                        ApplyMetadata(check, metadata);
                                         break;
                                 }
 
