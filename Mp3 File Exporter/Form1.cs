@@ -160,9 +160,10 @@ namespace Mp3_File_Exporter
                                     case 3:         // keep adding numbers until there is no file with the same name
                                         string check;
                                         int counter = 1;
-                                        string newName = metadata[0] + "_" + counter + file.Substring(file.LastIndexOf("."));
+                                        string newName;
                                         do
                                         {
+                                            newName = metadata[0] + "_" + counter + file.Substring(file.LastIndexOf("."));
                                             check = CopyFile(file, newName, false);
                                             counter++;
                                         } while (check == null);
