@@ -120,15 +120,7 @@ namespace Mp3_File_Exporter
 
                             if (newFile != null) //file copied
                             {
-
-                                TagLib.File musicFile = TagLib.File.Create(newFile);
-
-                                musicFile.Tag.Title = metadata[0];
-                                musicFile.Tag.Performers = new string[] { metadata[1] };
-                                musicFile.Tag.Comment = musicFile.Tag.Comment + metadata[2] + metadata[3];
-                                musicFile.Save();
-
-
+                                ApplyMetadata(newFile, metadata);
                                 fileCounter++;
                             }
 
@@ -162,15 +154,17 @@ namespace Mp3_File_Exporter
                                         break;
 
                                     case 2:         //force copying the file ie. overwrite
-                                        CopyFile(file, fileName, true);
+                                        ApplyMetadata(CopyFile(file, fileName, true), metadata);
                                         break;
 
                                     case 3:         // keep adding numbers until there is no file with the same name
                                         string check;
                                         int counter = 1;
+                                        string newName = metadata[0] + "_" + counter + file.Substring(file.LastIndexOf("."));
                                         do
                                         {
-                                            check = CopyFile(file, metadata[0] + "_" + counter + file.Substring(file.LastIndexOf(".")), false);
+                                            check = CopyFile(file, newName, false);
+                                            ApplyMetadata(check, metadata);
                                             counter++;
                                         } while (check == null);
                                         break;
@@ -217,7 +211,16 @@ namespace Mp3_File_Exporter
             return form2.result;
         } 
 
-        private bool PromptOverwrite()
+        public void ApplyMetadata(string file, string[] metadata)
+        {
+            TagLib.File musicFile = TagLib.File.Create(file);
+            musicFile.Tag.Title = metadata[0];
+            musicFile.Tag.Performers = new string[] { metadata[1] };
+            musicFile.Tag.Comment = musicFile.Tag.Comment + metadata[2] + metadata[3];
+            musicFile.Save();
+        }
+
+        private bool PromptOverwrite() //obsolete
         {
             DialogResult result = MessageBox.Show("This file already exists in the destination folder.\r\n Overwrite the file?", "", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes)
