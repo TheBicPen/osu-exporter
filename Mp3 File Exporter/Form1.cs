@@ -12,14 +12,14 @@ namespace Mp3_File_Exporter
         string DestinationFolder;
         string FileType = "*.mp3";
         int mode = 1;
-        // bool allowOverwrite = false; //obsolete
+
 
         public Form1()
         {
             InitializeComponent();
             ChangeMode(1);
             radioButton2.Hide(); // currently does nothing
-            checkBox1.Hide(); //obsolete
+
 
         }
 
@@ -62,12 +62,14 @@ namespace Mp3_File_Exporter
                 {
                     string[] folders = Directory.GetDirectories(SourceFolder);
                     fileCount = folders.Length;
+                    progressBar1.Maximum = fileCount;
 
                     int choice = 0; //what to do when the file exists at the destination
                     bool rememberChoice = false; //use choice for all files?
 
                     foreach (string folder in folders)
                     {
+                        progressBar1.Value = fileCounter;
                         string songFolder = Path.Combine(SourceFolder, folder);
                         string[] textFiles = Directory.GetFiles(songFolder, "*.osu");
                         string textFile;
@@ -126,7 +128,6 @@ namespace Mp3_File_Exporter
 
                             else if (newFile == null) //file exists at destination
                             {
-                                //skipCounter++; //obsolete
                                 TagLib.File sourceFile = TagLib.File.Create(file);
                                 TagLib.File destFile = TagLib.File.Create(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))));
 
@@ -136,7 +137,7 @@ namespace Mp3_File_Exporter
                                 else if (rememberChoice == false)
                                 {
 
-                                    var overwrite = NewPromptOverwrite(sourceFile.Tag.ToString(), destFile.Tag.ToString());
+                                    var overwrite = PromptOverwrite(sourceFile.Tag.ToString(), destFile.Tag.ToString());
                                     choice = overwrite[0];
 
                                     if (overwrite[1] == 1) //use this choice for all files
@@ -155,6 +156,7 @@ namespace Mp3_File_Exporter
 
                                     case 2:         //force copying the file ie. overwrite
                                         ApplyMetadata(CopyFile(file, fileName, true), metadata);
+                                        fileCounter++;
                                         break;
 
                                     case 3:         // keep adding numbers until there is no file with the same name
@@ -168,6 +170,7 @@ namespace Mp3_File_Exporter
                                             counter++;
                                         } while (check == null);
                                         ApplyMetadata(check, metadata);
+                                        fileCounter++;
                                         break;
                                 }
 
@@ -205,7 +208,7 @@ namespace Mp3_File_Exporter
             }
         }
 
-        private int[] NewPromptOverwrite(string newFileData, string existingFileData)
+        private int[] PromptOverwrite(string newFileData, string existingFileData)
         {
             Form2 form2 = new Form2(newFileData, existingFileData);
             form2.ShowDialog();
@@ -219,16 +222,6 @@ namespace Mp3_File_Exporter
             musicFile.Tag.Performers = new string[] { metadata[1] };
             musicFile.Tag.Comment = musicFile.Tag.Comment + metadata[2] + metadata[3];
             musicFile.Save();
-        }
-
-        private bool PromptOverwrite() //obsolete
-        {
-            DialogResult result = MessageBox.Show("This file already exists in the destination folder.\r\n Overwrite the file?", "", MessageBoxButtons.YesNo);
-            if (result == DialogResult.Yes)
-            { return true; }
-            else if (result == DialogResult.No)
-            { return false; }
-            else { throw new GenericException(); }
         }
 
         private bool ManyFiles(int fileCounter)
@@ -331,7 +324,7 @@ namespace Mp3_File_Exporter
                         button1.Text = "osu! Songs folder";
                         label1.Hide();
                         textBox3.Hide();
-                //        checkBox1.Show(); //obsolete
+
                         break;
                     }
                 case 2:
@@ -340,7 +333,7 @@ namespace Mp3_File_Exporter
                         button1.Text = "Source folder";
                         label1.Show();
                         textBox3.Show();
-                   //     checkBox1.Hide(); //obsolete
+
                         break;
                     }
                 case 3:
@@ -349,7 +342,7 @@ namespace Mp3_File_Exporter
                         button1.Text = "Source folder";
                         label1.Show();
                         textBox3.Show();
-                    //    checkBox1.Hide(); //obsolete
+
                         break;
                     }
                 default:
