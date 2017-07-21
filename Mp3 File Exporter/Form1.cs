@@ -51,6 +51,7 @@ namespace Mp3_File_Exporter
 
         private void FindFiles(string SourceFolder, string DestinationFolder, string FileType, int mode)
         {
+            button4.Show();
             int skipCounter = 0;
             int fileCount = 0;
             int fileCounter = 0;
@@ -367,9 +368,10 @@ namespace Mp3_File_Exporter
             ChangeMode(3);
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void button4_Click(object sender, EventArgs e)
         {
-           /* allowOverwrite = checkBox1.Checked;*/
+
+            Application.Exit();
         }
     }
 
