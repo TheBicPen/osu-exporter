@@ -68,6 +68,10 @@ namespace Mp3_File_Exporter
                 {
                     string[] folders = Directory.GetDirectories(SourceFolder);
                     fileCount = folders.Length;
+
+                    int choice = 0; //what to do when the file exists at the destination
+                    bool rememberChoice = false; //use choice for all files?
+
                     foreach (string folder in folders)
                     {
                         string songFolder = Path.Combine(SourceFolder, folder);
@@ -120,7 +124,6 @@ namespace Mp3_File_Exporter
                             string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
                             string newFile = CopyFile(file, fileName, false);
 
-
                             if (newFile != null) //file copied
                             {
 
@@ -141,16 +144,31 @@ namespace Mp3_File_Exporter
                                 TagLib.File sourceFile = TagLib.File.Create(file);
                                 TagLib.File destFile = TagLib.File.Create(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))));
 
-                                var overwrite = NewPromptOverwrite(sourceFile.Tag.ToString(), destFile.Tag.ToString());
 
-                                switch (overwrite[0]) //skip, replace, keep both files
+                                if (rememberChoice == true) { }
+
+                                else if (rememberChoice == false)
+                                {
+
+                                    var overwrite = NewPromptOverwrite(sourceFile.Tag.ToString(), destFile.Tag.ToString());
+                                    choice = overwrite[0];
+
+                                    if (overwrite[1] == 1) //use this choice for all files
+                                    { rememberChoice = true; }
+                                    else if (overwrite[1] == 0)
+                                    { rememberChoice = false; }
+                                    else { throw new GenericException(); }
+
+                                }
+
+                                switch (choice) //skip, replace, keep both files
                                 {
                                     case 1:         // skip this file
-                                        skipCounter++; 
+                                        skipCounter++;
                                         break;
 
                                     case 2:         //force copying the file ie. overwrite
-                                        CopyFile(file, fileName, true); 
+                                        CopyFile(file, fileName, true);
                                         break;
 
                                     case 3:         // keep adding numbers until there is no file with the same name
@@ -163,17 +181,21 @@ namespace Mp3_File_Exporter
                                         } while (check == null);
                                         break;
                                 }
+
                             }
                             else { throw new GenericException(); }
-                        }
+
+                        } //if (textFiles.Length != 0)
+
                         else
                         {
                             invalidFolders++;
                             fileCount--;
                         }
 
-                    }
-                }
+                    } //foreach (string folder in folders)
+
+                } //if (mode == 1)
 
 
                 else if (mode == 2 || mode == 3)
