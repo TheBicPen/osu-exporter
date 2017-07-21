@@ -25,6 +25,7 @@ namespace Mp3_File_Exporter
             InitializeComponent();
             ChangeMode(1);
             radioButton2.Hide(); // currently does nothing
+            checkBox1.Hide(); //obsolete
 
         }
 
@@ -136,11 +137,32 @@ namespace Mp3_File_Exporter
 
                             else if (newFile == null) //file exists at destination
                             {
-                                //skipCounter++;
+                                //skipCounter++; //obsolete
                                 TagLib.File sourceFile = TagLib.File.Create(file);
                                 TagLib.File destFile = TagLib.File.Create(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))));
 
                                 var overwrite = NewPromptOverwrite(sourceFile.Tag.ToString(), destFile.Tag.ToString());
+
+                                switch (overwrite[0]) //skip, replace, keep both files
+                                {
+                                    case 1:         // skip this file
+                                        skipCounter++; 
+                                        break;
+
+                                    case 2:         //force copying the file ie. overwrite
+                                        CopyFile(file, fileName, true); 
+                                        break;
+
+                                    case 3:         // keep adding numbers until there is no file with the same name
+                                        string check;
+                                        int counter = 1;
+                                        do
+                                        {
+                                            check = CopyFile(file, metadata[0] + "_" + counter + file.Substring(file.LastIndexOf(".")), false);
+                                            counter++;
+                                        } while (check == null);
+                                        break;
+                                }
                             }
                             else { throw new GenericException(); }
                         }
@@ -256,16 +278,25 @@ namespace Mp3_File_Exporter
         {
             fileName = GetSafePathname(GetSafeFilename(fileName));
             string DestinationFile = Path.Combine(DestinationFolder, fileName);
+
             if (File.Exists(DestinationFile) && forceCopy == false)
             {
                return DestinationFile = null;
             }
 
-            else if (!File.Exists(DestinationFile) || forceCopy)
+            else if (!File.Exists(DestinationFile)) //copy the file if it does not exist at the destination
             {
                 File.Copy(sourceFile, DestinationFile);
                 return DestinationFile;
             }
+
+            else if (forceCopy) //if forceCopy, then delete the destination file and copy the new one in its place
+            {
+                File.Delete(DestinationFile);
+                File.Copy(sourceFile, DestinationFile);
+                return DestinationFile;
+            }
+
             else
             { throw new GenericException(); }
         }
@@ -280,7 +311,7 @@ namespace Mp3_File_Exporter
                         button1.Text = "osu! Songs folder";
                         label1.Hide();
                         textBox3.Hide();
-                        checkBox1.Show();
+                //        checkBox1.Show(); //obsolete
                         break;
                     }
                 case 2:
@@ -289,7 +320,7 @@ namespace Mp3_File_Exporter
                         button1.Text = "Source folder";
                         label1.Show();
                         textBox3.Show();
-                        checkBox1.Hide();
+                   //     checkBox1.Hide(); //obsolete
                         break;
                     }
                 case 3:
@@ -298,7 +329,7 @@ namespace Mp3_File_Exporter
                         button1.Text = "Source folder";
                         label1.Show();
                         textBox3.Show();
-                        checkBox1.Hide();
+                    //    checkBox1.Hide(); //obsolete
                         break;
                     }
                 default:

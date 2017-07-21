@@ -18,6 +18,8 @@ namespace Mp3_File_Exporter
         {
             InitializeComponent();
             //todo: display data
+            label1.Text = newData;
+            label2.Text = oldData;
         }
 
         private void CheckCheckboxStatus(CheckBox checkBox)
@@ -48,5 +50,6 @@ namespace Mp3_File_Exporter
             CheckCheckboxStatus(checkBox1);
             this.Close();
         }
+
     }
 }
