@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
@@ -18,7 +12,7 @@ namespace Mp3_File_Exporter
         string DestinationFolder;
         string FileType = "*.mp3";
         int mode = 1;
-        /* bool allowOverwrite = false; */
+        // bool allowOverwrite = false; //obsolete
 
         public Form1()
         {
