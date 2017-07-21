@@ -69,7 +69,7 @@ namespace Mp3_File_Exporter
 
                     foreach (string folder in folders)
                     {
-                        progressBar1.Value = fileCounter;
+                        progressBar1.Value = fileCounter + skipCounter + invalidFolders + 1;
                         string songFolder = Path.Combine(SourceFolder, folder);
                         string[] textFiles = Directory.GetFiles(songFolder, "*.osu");
                         string textFile;
