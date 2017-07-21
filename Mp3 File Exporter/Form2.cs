@@ -12,38 +12,41 @@ namespace Mp3_File_Exporter
 {
     public partial class Form2 : Form
     {
-        public string result;
+        public int[] result = new int[2];
 
         public Form2(string newData, string oldData)
         {
             InitializeComponent();
-            //display data
+            //todo: display data
         }
 
         private void CheckCheckboxStatus(CheckBox checkBox)
         {
             if (checkBox.Checked)
-            { result += " remember"; }
+            { result[1] = 1; }
             else
-            { result += "forget"; }
+            { result[1] = 0; }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            result = button1.Text;
+            result[0] = 1;
             CheckCheckboxStatus(checkBox1);
+            this.Close();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            result = button3.Text;
+            result[0] = 3;
             CheckCheckboxStatus(checkBox1);
+            this.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            result = button2.Text;
+            result[0] = 2;
             CheckCheckboxStatus(checkBox1);
+            this.Close();
         }
     }
 }

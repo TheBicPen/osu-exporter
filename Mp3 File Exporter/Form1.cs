@@ -120,7 +120,7 @@ namespace Mp3_File_Exporter
                             string newFile = CopyFile(file, fileName, false);
 
 
-                            if (newFile != null)
+                            if (newFile != null) //file copied
                             {
 
                                 TagLib.File musicFile = TagLib.File.Create(newFile);
@@ -134,13 +134,13 @@ namespace Mp3_File_Exporter
                                 fileCounter++;
                             }
 
-                            else if (newFile == null)
+                            else if (newFile == null) //file exists at destination
                             {
                                 //skipCounter++;
                                 TagLib.File sourceFile = TagLib.File.Create(file);
                                 TagLib.File destFile = TagLib.File.Create(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))));
 
-                                NewPromptOverwrite(sourceFile.Tag.ToString(), destFile.Tag.ToString());
+                                var overwrite = NewPromptOverwrite(sourceFile.Tag.ToString(), destFile.Tag.ToString());
                             }
                             else { throw new GenericException(); }
                         }
@@ -172,7 +172,7 @@ namespace Mp3_File_Exporter
             }
         }
 
-        private string NewPromptOverwrite(string newFileData, string existingFileData)
+        private int[] NewPromptOverwrite(string newFileData, string existingFileData)
         {
             Form2 form2 = new Form2(newFileData, existingFileData);
             form2.ShowDialog();
