@@ -32,8 +32,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.SuspendLayout();
             // 
             // button1
@@ -76,29 +75,26 @@
             this.checkBox1.Text = "Use this choice for all remaining files";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
-            // propertyGrid1
+            // tableLayoutPanel1
             // 
-            this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDark;
-            this.propertyGrid1.Location = new System.Drawing.Point(12, 50);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(270, 251);
-            this.propertyGrid1.TabIndex = 8;
-            // 
-            // propertyGrid2
-            // 
-            this.propertyGrid2.LineColor = System.Drawing.SystemColors.ControlDark;
-            this.propertyGrid2.Location = new System.Drawing.Point(288, 50);
-            this.propertyGrid2.Name = "propertyGrid2";
-            this.propertyGrid2.Size = new System.Drawing.Size(270, 251);
-            this.propertyGrid2.TabIndex = 9;
+            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(115, 46);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 100);
+            this.tableLayoutPanel1.TabIndex = 8;
             // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(593, 465);
-            this.Controls.Add(this.propertyGrid2);
-            this.Controls.Add(this.propertyGrid1);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
@@ -115,7 +111,6 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.PropertyGrid propertyGrid1;
-        private System.Windows.Forms.PropertyGrid propertyGrid2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }

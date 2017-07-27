@@ -209,7 +209,7 @@ namespace Mp3_File_Exporter
             }
         }
 
-        private int[] PromptOverwrite(object newFileData, object existingFileData)
+        private int[] PromptOverwrite(TagLib.File newFileData, TagLib.File existingFileData)
         {
             Form2 form2 = new Form2(newFileData, existingFileData);
             form2.ShowDialog();
