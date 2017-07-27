@@ -14,21 +14,40 @@ namespace Mp3_File_Exporter
     {
         public int[] result = new int[2];
 
-        public Form2(TagLib.File newData, TagLib.File oldData)
+        public Form2(TagLib.File newData, TagLib.File oldData, string[] newMetadata) //metadata: title, artist, beatmap creator, tags
         {
             InitializeComponent();
+            newData.Tag.Title = newMetadata[0];
+            newData.Tag.Performers = new string[] { newMetadata[1] };
+            newData.Tag.Comment = newData.Tag.Comment + newMetadata[2] + newMetadata[3]; //apply the new metadata without saving it
             DisplayInfo(newData, oldData);
         }
 
-        private void DisplayInfo(TagLib.File newData, TagLib.File oldData) //title, artist, beatmap creator, tags
+       
+
+        private void DisplayInfo(TagLib.File newData, TagLib.File oldData) //title, performers, album artists, comment
         {
             label5.Text = oldData.Tag.Title;
             label6.Text = newData.Tag.Title;
-            label8.Text = oldData.Tag.Performers.ToString();
-            label9.Text = newData.Tag.Performers.ToString();
-            label11.Text = oldData.Tag.Comment;
-            label12.Text = newData.Tag.Comment;
 
+            label8.Text = "";
+            label9.Text = "";
+            foreach (string performer in oldData.Tag.Performers)
+            { label8.Text += performer; }
+            foreach (string performer in newData.Tag.Performers)
+            { label9.Text += performer; }
+
+            label11.Text = "";
+            label12.Text = "";
+            foreach (string artist in oldData.Tag.AlbumArtists)
+            { label11.Text += artist; }
+            foreach (string artist in newData.Tag.AlbumArtists)
+            { label12.Text += artist; }
+
+            label14.Text = oldData.Tag.Comment;
+            label15.Text = newData.Tag.Comment;
+            label17.Text = oldData.Tag.Year.ToString();
+            label18.Text = newData.Tag.Year.ToString();
         }
 
         private void CheckCheckboxStatus(CheckBox checkBox)

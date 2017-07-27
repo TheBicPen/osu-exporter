@@ -123,7 +123,7 @@ namespace Mp3_File_Exporter
 
                             if (newFile != null) //file copied
                             {
-                                ApplyMetadata(newFile, metadata);
+                                ApplyMetadata(newFile, metadata, true);
                                 fileCounter++;
                             }
 
@@ -138,7 +138,7 @@ namespace Mp3_File_Exporter
                                 else if (rememberChoice == false)
                                 {
 
-                                    var overwrite = PromptOverwrite(sourceFile, destFile);
+                                    var overwrite = PromptOverwrite(sourceFile, destFile, metadata);
                                     choice = overwrite[0];
 
                                     if (overwrite[1] == 1) //use this choice for all files
@@ -156,7 +156,7 @@ namespace Mp3_File_Exporter
                                         break;
 
                                     case 2:         //force copying the file ie. overwrite
-                                        ApplyMetadata(CopyFile(file, fileName, true), metadata);
+                                        ApplyMetadata(CopyFile(file, fileName, true), metadata, true);
                                         fileCounter++;
                                         break;
 
@@ -170,7 +170,7 @@ namespace Mp3_File_Exporter
                                             check = CopyFile(file, newName, false);
                                             counter++;
                                         } while (check == null);
-                                        ApplyMetadata(check, metadata);
+                                        ApplyMetadata(check, metadata, true);
                                         fileCounter++;
                                         break;
                                 }
@@ -209,20 +209,20 @@ namespace Mp3_File_Exporter
             }
         }
 
-        private int[] PromptOverwrite(TagLib.File newFileData, TagLib.File existingFileData)
+        private int[] PromptOverwrite(TagLib.File newFileData, TagLib.File existingFileData, string[] metadata)
         {
-            Form2 form2 = new Form2(newFileData, existingFileData);
+            Form2 form2 = new Form2(newFileData, existingFileData, metadata);
             form2.ShowDialog();
             return form2.result;
         } 
 
-        public void ApplyMetadata(string file, string[] metadata)
+        public void ApplyMetadata(string file, string[] metadata, bool save)
         {
             TagLib.File musicFile = TagLib.File.Create(file);
             musicFile.Tag.Title = metadata[0];
             musicFile.Tag.Performers = new string[] { metadata[1] };
             musicFile.Tag.Comment = musicFile.Tag.Comment + metadata[2] + metadata[3];
-            musicFile.Save();
+            if(save) { musicFile.Save(); }
         }
 
         private bool ManyFiles(int fileCounter)
