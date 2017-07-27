@@ -17,7 +17,18 @@ namespace Mp3_File_Exporter
         public Form2(TagLib.File newData, TagLib.File oldData)
         {
             InitializeComponent();
-            
+            DisplayInfo(newData, oldData);
+        }
+
+        private void DisplayInfo(TagLib.File newData, TagLib.File oldData) //title, artist, beatmap creator, tags
+        {
+            label5.Text = oldData.Tag.Title;
+            label6.Text = newData.Tag.Title;
+            label8.Text = oldData.Tag.Performers.ToString();
+            label9.Text = newData.Tag.Performers.ToString();
+            label11.Text = oldData.Tag.Comment;
+            label12.Text = newData.Tag.Comment;
+
         }
 
         private void CheckCheckboxStatus(CheckBox checkBox)
