@@ -138,7 +138,7 @@ namespace Mp3_File_Exporter
                                 else if (rememberChoice == false)
                                 {
 
-                                    var overwrite = PromptOverwrite(sourceFile.Tag.ToString(), destFile.Tag.ToString());
+                                    var overwrite = PromptOverwrite(sourceFile, destFile);
                                     choice = overwrite[0];
 
                                     if (overwrite[1] == 1) //use this choice for all files
@@ -209,7 +209,7 @@ namespace Mp3_File_Exporter
             }
         }
 
-        private int[] PromptOverwrite(string newFileData, string existingFileData)
+        private int[] PromptOverwrite(object newFileData, object existingFileData)
         {
             Form2 form2 = new Form2(newFileData, existingFileData);
             form2.ShowDialog();

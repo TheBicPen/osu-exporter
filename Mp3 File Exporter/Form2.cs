@@ -14,12 +14,11 @@ namespace Mp3_File_Exporter
     {
         public int[] result = new int[2];
 
-        public Form2(string newData, string oldData)
+        public Form2(object newData, object oldData)
         {
             InitializeComponent();
-            //todo: display data
-            label1.Text = newData;
-            label2.Text = oldData;
+            propertyGrid1.SelectedObject = oldData;
+            propertyGrid2.SelectedObject = newData;
         }
 
         private void CheckCheckboxStatus(CheckBox checkBox)
