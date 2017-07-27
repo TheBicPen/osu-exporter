@@ -173,6 +173,8 @@ namespace Mp3_File_Exporter
                                         ApplyMetadata(check, metadata, true);
                                         fileCounter++;
                                         break;
+                                    default:
+                                        goto case 1;
                                 }
 
                             }
@@ -205,7 +207,7 @@ namespace Mp3_File_Exporter
             }
             else
             {
-                MessageBox.Show("Please select a source folder, a destination folder, and a file type", "Error");
+                MessageBox.Show("Please select a valid source folder, destination folder, and file type", "Error");
             }
         }
 
@@ -372,6 +374,16 @@ namespace Mp3_File_Exporter
         {
 
             Application.Exit();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (Directory.Exists(textBox1.Text)) { SourceFolder = textBox1.Text; }
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            if (Directory.Exists(textBox2.Text)) { DestinationFolder = textBox2.Text; }
         }
     }
 
