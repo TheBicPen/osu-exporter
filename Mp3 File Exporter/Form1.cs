@@ -51,7 +51,7 @@ namespace Mp3_File_Exporter
 
         private void FindFiles(string SourceFolder, string DestinationFolder, string FileType, int mode)
         {
-            
+            DateTime beginOperationTime = DateTime.Now;
             button4.Show();
             int skipCounter = 0;
             int fileCount = 0;
@@ -128,59 +128,65 @@ namespace Mp3_File_Exporter
                                 fileCounter++;
                             }
 
-                            if (newFile == null && checkBox2.Checked) //file exists at destination and "Skip files that existed at the destination BEFORE this copy" is true
-                            { }
-
-                            else if (newFile == null && checkBox2.Checked == false) //file exists at destination and "Skip files that existed at the destination BEFORE this copy" is false
+                            else if (newFile == null) //file exists at destination 
                             {
-                                TagLib.File sourceFile = TagLib.File.Create(file);
-                                TagLib.File destFile = TagLib.File.Create(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))));
+                                DateTime fileCreated = File.GetCreationTime(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName)))); //get when the destination file was created
 
+                                if (fileCreated < beginOperationTime && checkBox2.Checked)  //if the file already existed and already-existing files are to be skipped
+                                { skipCounter++; }
 
-                                if (rememberChoice == true) { }
-
-                                else if (rememberChoice == false)
+                                else if (fileCreated >= beginOperationTime || checkBox2.Checked == false) //file exists at destination and "Skip files that existed at the destination BEFORE this copy" is false
                                 {
+                                    TagLib.File sourceFile = TagLib.File.Create(file);
+                                    TagLib.File destFile = TagLib.File.Create(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))));
 
-                                    var overwrite = PromptOverwrite(sourceFile, destFile, metadata);
-                                    choice = overwrite[0];
 
-                                    if (overwrite[1] == 1) //use this choice for all files
-                                    { rememberChoice = true; }
-                                    else if (overwrite[1] == 0)
-                                    { rememberChoice = false; }
-                                    else { throw new GenericException(); }
+                                    if (rememberChoice == true) { }
+
+                                    else if (rememberChoice == false)
+                                    {
+
+                                        var overwrite = PromptOverwrite(sourceFile, destFile, metadata);
+                                        choice = overwrite[0];
+
+                                        if (overwrite[1] == 1) //use this choice for all files
+                                        { rememberChoice = true; }
+                                        else if (overwrite[1] == 0)
+                                        { rememberChoice = false; }
+                                        else { throw new GenericException(); }
+
+                                    }
+
+                                    switch (choice) //skip, replace, keep both files
+                                    {
+                                        case 1:         // skip this file
+                                            skipCounter++;
+                                            break;
+
+                                        case 2:         //force copying the file ie. overwrite
+                                            ApplyMetadata(CopyFile(file, fileName, true), metadata, true);
+                                            fileCounter++;
+                                            break;
+
+                                        case 3:         // keep adding numbers until there is no file with the same name
+                                            string check;
+                                            int counter = 1;
+                                            string newName;
+                                            do
+                                            {
+                                                newName = metadata[0] + "_" + counter + file.Substring(file.LastIndexOf("."));
+                                                check = CopyFile(file, newName, false);
+                                                counter++;
+                                            } while (check == null);
+                                            ApplyMetadata(check, metadata, true);
+                                            fileCounter++;
+                                            break;
+                                        default:
+                                            goto case 1;
+                                    }
 
                                 }
-
-                                switch (choice) //skip, replace, keep both files
-                                {
-                                    case 1:         // skip this file
-                                        skipCounter++;
-                                        break;
-
-                                    case 2:         //force copying the file ie. overwrite
-                                        ApplyMetadata(CopyFile(file, fileName, true), metadata, true);
-                                        fileCounter++;
-                                        break;
-
-                                    case 3:         // keep adding numbers until there is no file with the same name
-                                        string check;
-                                        int counter = 1;
-                                        string newName;
-                                        do
-                                        {
-                                            newName = metadata[0] + "_" + counter + file.Substring(file.LastIndexOf("."));
-                                            check = CopyFile(file, newName, false);
-                                            counter++;
-                                        } while (check == null);
-                                        ApplyMetadata(check, metadata, true);
-                                        fileCounter++;
-                                        break;
-                                    default:
-                                        goto case 1;
-                                }
-
+                                else { throw new GenericException(); }
                             }
                             else { throw new GenericException(); }
 
