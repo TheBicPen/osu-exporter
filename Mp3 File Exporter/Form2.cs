@@ -81,10 +81,5 @@ namespace Mp3_File_Exporter
         {
             CheckCheckboxStatus((CheckBox)sender, 1);
         }
-
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
-        {
-            CheckCheckboxStatus((CheckBox)sender, 2);
-        }
     }
 }

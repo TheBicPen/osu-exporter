@@ -51,6 +51,7 @@ namespace Mp3_File_Exporter
 
         private void FindFiles(string SourceFolder, string DestinationFolder, string FileType, int mode)
         {
+            DateTime.Now.
             button4.Show();
             int skipCounter = 0;
             int fileCount = 0;
@@ -127,7 +128,10 @@ namespace Mp3_File_Exporter
                                 fileCounter++;
                             }
 
-                            else if (newFile == null) //file exists at destination
+                            if (newFile == null && checkBox2.Checked) //file exists at destination and "Skip files that existed at the destination BEFORE this copy" is true
+                            { }
+
+                            else if (newFile == null && checkBox2.Checked == false) //file exists at destination and "Skip files that existed at the destination BEFORE this copy" is false
                             {
                                 TagLib.File sourceFile = TagLib.File.Create(file);
                                 TagLib.File destFile = TagLib.File.Create(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))));
@@ -383,6 +387,11 @@ namespace Mp3_File_Exporter
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             if (Directory.Exists(textBox2.Text)) { DestinationFolder = textBox2.Text; }
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
