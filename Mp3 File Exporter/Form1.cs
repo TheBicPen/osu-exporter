@@ -51,7 +51,7 @@ namespace Mp3_File_Exporter
 
         private void FindFiles(string SourceFolder, string DestinationFolder, string FileType, int mode)
         {
-            DateTime.Now.
+            
             button4.Show();
             int skipCounter = 0;
             int fileCount = 0;
