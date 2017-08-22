@@ -67,129 +67,128 @@ namespace Mp3_File_Exporter
 
                     int choice = 0; //what to do when the file exists at the destination
                     bool rememberChoice = false; //use choice for all files?
-                    if (MessageBox.Show($"{fileCount} files found. Copy files?", "Proceed?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+
+                    foreach (string folder in folders)
                     {
-                        foreach (string folder in folders)
+                        progressBar1.Value = fileCounter + skipCounter + invalidFolders + 1;
+                        string songFolder = Path.Combine(SourceFolder, folder);
+                        string[] textFiles = Directory.GetFiles(songFolder, "*.osu");
+                        string textFile;
+                        string[] metadata = new string[4]; //title, artist, beatmap creator, tags
+                        string line;
+                        string file = "";
+                        if (textFiles.Length != 0)
                         {
-                            progressBar1.Value = fileCounter + skipCounter + invalidFolders + 1;
-                            string songFolder = Path.Combine(SourceFolder, folder);
-                            string[] textFiles = Directory.GetFiles(songFolder, "*.osu");
-                            string textFile;
-                            string[] metadata = new string[4]; //title, artist, beatmap creator, tags
-                            string line;
-                            string file = "";
-                            if (textFiles.Length != 0)
+                            textFile = textFiles[0];
+
+
+                            using (StreamReader textReader = new StreamReader(textFile))
                             {
-                                textFile = textFiles[0];
-
-
-                                using (StreamReader textReader = new StreamReader(textFile))
+                                do
                                 {
-                                    do
+                                    line = textReader.ReadLine();
+                                    if (line.Contains("AudioFilename:"))
                                     {
-                                        line = textReader.ReadLine();
-                                        if (line.Contains("AudioFilename:"))
-                                        {
-                                            file = line;
-                                        }
-                                        else if (line.Contains("Title:"))
-                                        {
-                                            metadata[0] = line;
-                                            metadata[0] = metadata[0].Remove(0, "Title:".ToCharArray().Length);
-                                        }
-
-                                        else if (line.Contains("Artist:"))
-                                        {
-                                            metadata[1] = line;
-                                            metadata[1] = metadata[1].Remove(0, "Artist:".ToCharArray().Length);
-                                        }
-
-                                        else if (line.Contains("Creator:"))
-                                        {
-                                            metadata[2] = line;
-                                            //    metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length);
-                                        }
-
-                                        else if (line.Contains("Tags:"))
-                                        {
-                                            metadata[3] = line;
-                                        }
-
-                                    } while (line != "[Difficulty]");
-
-                                }
-                                file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
-                                string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
-                                string newFile = CopyFile(file, fileName, false);
-
-                                if (newFile != null) //file copied
-                                {
-                                    ApplyMetadata(newFile, metadata);
-                                    fileCounter++;
-                                }
-
-                                else if (newFile == null) //file exists at destination
-                                {
-                                    TagLib.File sourceFile = TagLib.File.Create(file);
-                                    TagLib.File destFile = TagLib.File.Create(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))));
-
-
-                                    if (rememberChoice == true) { }
-
-                                    else if (rememberChoice == false)
+                                        file = line;
+                                    }
+                                    else if (line.Contains("Title:"))
                                     {
-
-                                        var overwrite = PromptOverwrite(sourceFile.Tag.ToString(), destFile.Tag.ToString());
-                                        choice = overwrite[0];
-
-                                        if (overwrite[1] == 1) //use this choice for all files
-                                        { rememberChoice = true; }
-                                        else if (overwrite[1] == 0)
-                                        { rememberChoice = false; }
-                                        else { throw new GenericException(); }
-
+                                        metadata[0] = line;
+                                        metadata[0] = metadata[0].Remove(0, "Title:".ToCharArray().Length);
                                     }
 
-                                    switch (choice) //skip, replace, keep both files
+                                    else if (line.Contains("Artist:"))
                                     {
-                                        case 1:         // skip this file
-                                            skipCounter++;
-                                            break;
-
-                                        case 2:         //force copying the file ie. overwrite
-                                            ApplyMetadata(CopyFile(file, fileName, true), metadata);
-                                            fileCounter++;
-                                            break;
-
-                                        case 3:         // keep adding numbers until there is no file with the same name
-                                            string check;
-                                            int counter = 1;
-                                            string newName;
-                                            do
-                                            {
-                                                newName = metadata[0] + "_" + counter + file.Substring(file.LastIndexOf("."));
-                                                check = CopyFile(file, newName, false);
-                                                counter++;
-                                            } while (check == null);
-                                            ApplyMetadata(check, metadata);
-                                            fileCounter++;
-                                            break;
+                                        metadata[1] = line;
+                                        metadata[1] = metadata[1].Remove(0, "Artist:".ToCharArray().Length);
                                     }
 
-                                }
-                                else { throw new GenericException(); }
+                                    else if (line.Contains("Creator:"))
+                                    {
+                                        metadata[2] = line;
+                                    //    metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length);
+                                    }
 
-                            } //if (textFiles.Length != 0)
+                                    else if (line.Contains("Tags:"))
+                                    {
+                                        metadata[3] = line;
+                                    }
 
-                            else
+                                } while (line != "[Difficulty]");
+
+                            }
+                            file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
+                            string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
+                            string newFile = CopyFile(file, fileName, false);
+
+                            if (newFile != null) //file copied
                             {
-                                invalidFolders++;
-                                fileCount--;
+                                ApplyMetadata(newFile, metadata, true);
+                                fileCounter++;
                             }
 
-                        } //foreach (string folder in folders)
-                    }//if
-                    else { MessageBox.Show("Operation cancelled."); }
+                            else if (newFile == null) //file exists at destination
+                            {
+                                TagLib.File sourceFile = TagLib.File.Create(file);
+                                TagLib.File destFile = TagLib.File.Create(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))));
+
+
+                                if (rememberChoice == true) { }
+
+                                else if (rememberChoice == false)
+                                {
+
+                                    var overwrite = PromptOverwrite(sourceFile, destFile, metadata);
+                                    choice = overwrite[0];
+
+                                    if (overwrite[1] == 1) //use this choice for all files
+                                    { rememberChoice = true; }
+                                    else if (overwrite[1] == 0)
+                                    { rememberChoice = false; }
+                                    else { throw new GenericException(); }
+
+                                }
+
+                                switch (choice) //skip, replace, keep both files
+                                {
+                                    case 1:         // skip this file
+                                        skipCounter++;
+                                        break;
+
+                                    case 2:         //force copying the file ie. overwrite
+                                        ApplyMetadata(CopyFile(file, fileName, true), metadata, true);
+                                        fileCounter++;
+                                        break;
+
+                                    case 3:         // keep adding numbers until there is no file with the same name
+                                        string check;
+                                        int counter = 1;
+                                        string newName;
+                                        do
+                                        {
+                                            newName = metadata[0] + "_" + counter + file.Substring(file.LastIndexOf("."));
+                                            check = CopyFile(file, newName, false);
+                                            counter++;
+                                        } while (check == null);
+                                        ApplyMetadata(check, metadata, true);
+                                        fileCounter++;
+                                        break;
+                                    default:
+                                        goto case 1;
+                                }
+
+                            }
+                            else { throw new GenericException(); }
+
+                        } //if (textFiles.Length != 0)
+
+                        else
+                        {
+                            invalidFolders++;
+                            fileCount--;
+                        }
+
+                    } //foreach (string folder in folders)
 
                 } //if (mode == 1)
 
@@ -199,37 +198,33 @@ namespace Mp3_File_Exporter
                     
                     string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
                     int[] counter = new int[2];
+                    counter = CopyFiles(files);
+                    fileCount = counter[0];
+                    skipCounter = counter[1];
 
-                    if (MessageBox.Show($"{files.Length} files found. Copy files?", "Proceed?", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                    {
-                        counter = CopyFiles(files);
-                        fileCount = counter[0];
-                        skipCounter = counter[1];
-                    }
-                    else { MessageBox.Show("Operation cancelled."); }
                 }
                 MessageBox.Show($"{(fileCount - skipCounter).ToString()} of {fileCount} files copied.\r\n{invalidFolders} invalid folders.");
             }
             else
             {
-                MessageBox.Show("Please select a source folder, a destination folder, and a file type", "Error");
+                MessageBox.Show("Please select a valid source folder, destination folder, and file type", "Error");
             }
         }
 
-        private int[] PromptOverwrite(string newFileData, string existingFileData)
+        private int[] PromptOverwrite(TagLib.File newFileData, TagLib.File existingFileData, string[] metadata)
         {
-            Form2 form2 = new Form2(newFileData, existingFileData);
+            Form2 form2 = new Form2(newFileData, existingFileData, metadata);
             form2.ShowDialog();
             return form2.result;
         } 
 
-        public void ApplyMetadata(string file, string[] metadata)
+        public void ApplyMetadata(string file, string[] metadata, bool save)
         {
             TagLib.File musicFile = TagLib.File.Create(file);
             musicFile.Tag.Title = metadata[0];
             musicFile.Tag.Performers = new string[] { metadata[1] };
             musicFile.Tag.Comment = musicFile.Tag.Comment + metadata[2] + metadata[3];
-            musicFile.Save();
+            if(save) { musicFile.Save(); }
         }
 
         private bool ManyFiles(int fileCounter)
@@ -379,6 +374,16 @@ namespace Mp3_File_Exporter
         {
 
             Application.Exit();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (Directory.Exists(textBox1.Text)) { SourceFolder = textBox1.Text; }
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            if (Directory.Exists(textBox2.Text)) { DestinationFolder = textBox2.Text; }
         }
     }
 
