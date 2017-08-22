@@ -130,8 +130,9 @@ namespace Mp3_File_Exporter
 
                             else if (newFile == null) //file exists at destination 
                             {
-                                DateTime fileAccessed = File.GetLastAccessTime(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName)))); //get when the destination file was accessed
-                                File.SetLastAccessTime(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))), DateTime.Now); //set last access time to now so that source files with the same name are not skipped
+                                string destinationFile = Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName)));
+                                DateTime fileAccessed = File.GetLastAccessTime(destinationFile); //get when the destination file was accessed
+                                File.SetLastAccessTime(destinationFile, DateTime.Now); //set last access time to now so that source files with the same name are not skipped
 
                                 if (fileAccessed < beginOperationTime && checkBox2.Checked)  //if the file already existed and already-existing files are to be skipped
                                 { skipCounter++; }
@@ -139,7 +140,7 @@ namespace Mp3_File_Exporter
                                 else if (fileAccessed >= beginOperationTime || checkBox2.Checked == false) //file exists at destination and "Skip files that existed at the destination BEFORE this copy" is false
                                 {
                                     TagLib.File sourceFile = TagLib.File.Create(file);
-                                    TagLib.File destFile = TagLib.File.Create(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))));
+                                    TagLib.File destFile = TagLib.File.Create(destinationFile);
 
 
                                     if (rememberChoice == true) { }
