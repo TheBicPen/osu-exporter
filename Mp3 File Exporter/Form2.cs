@@ -12,7 +12,7 @@ namespace Mp3_File_Exporter
 {
     public partial class Form2 : Form
     {
-        public int[] result = new int[2];
+        public int[] result = new int[3];
 
         public Form2(TagLib.File newData, TagLib.File oldData, string[] newMetadata) //metadata: title, artist, beatmap creator, tags
         {
@@ -50,34 +50,41 @@ namespace Mp3_File_Exporter
             label18.Text = newData.Tag.Year.ToString();
         }
 
-        private void CheckCheckboxStatus(CheckBox checkBox)
+        private void CheckCheckboxStatus(CheckBox checkBox, int index)
         {
             if (checkBox.Checked)
-            { result[1] = 1; }
-            else
-            { result[1] = 0; }
+            { result[index] = 1; }
+            else if (checkBox.Checked == false)
+            { result[index] = 0; }
+            else { throw new GenericException(); }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             result[0] = 1;
-            CheckCheckboxStatus(checkBox1);
             this.Close();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             result[0] = 3;
-            CheckCheckboxStatus(checkBox1);
             this.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             result[0] = 2;
-            CheckCheckboxStatus(checkBox1);
             this.Close();
         }
 
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckCheckboxStatus((CheckBox)sender, 1);
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckCheckboxStatus((CheckBox)sender, 2);
+        }
     }
 }

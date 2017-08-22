@@ -313,8 +313,7 @@ namespace Mp3_File_Exporter
                 return DestinationFile;
             }
 
-            else
-            { throw new GenericException(); }
+            else { throw new GenericException(); }
         }
 
         private void ChangeMode(int Mode1)
