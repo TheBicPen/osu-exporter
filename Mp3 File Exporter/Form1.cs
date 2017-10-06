@@ -51,6 +51,7 @@ namespace Mp3_File_Exporter
 
         private void FindFiles(string SourceFolder, string DestinationFolder, string FileType, int mode)
         {
+            DateTime beginOperationTime = DateTime.Now;
             button4.Show();
             int skipCounter = 0;
             int fileCount = 0;
@@ -59,80 +60,87 @@ namespace Mp3_File_Exporter
 
             if (SourceFolder != null && DestinationFolder != null && FileType != null)
             {
-                try
+                if (mode == 1)
                 {
-                    if (mode == 1)
+                    string[] folders = Directory.GetDirectories(SourceFolder);
+                    fileCount = folders.Length;
+                    progressBar1.Maximum = fileCount;
+
+                    int choice = 0; //what to do when the file exists at the destination
+                    bool rememberChoice = false; //use choice for all files?
+
+                    foreach (string folder in folders)
                     {
-                        string[] folders = Directory.GetDirectories(SourceFolder);
-                        fileCount = folders.Length;
-                        progressBar1.Maximum = fileCount;
-
-                        int choice = 0; //what to do when the file exists at the destination
-                        bool rememberChoice = false; //use choice for all files?
-
-                        foreach (string folder in folders)
+                        progressBar1.Value = fileCounter + skipCounter + invalidFolders + 1;
+                        string songFolder = Path.Combine(SourceFolder, folder);
+                        string[] textFiles = Directory.GetFiles(songFolder, "*.osu");
+                        string textFile;
+                        string[] metadata = new string[4]; //title, artist, beatmap creator, tags
+                        string line;
+                        string file = "";
+                        if (textFiles.Length != 0)
                         {
-                            progressBar1.Value = fileCounter + skipCounter + invalidFolders + 1;
-                            string songFolder = Path.Combine(SourceFolder, folder);
-                            string[] textFiles = Directory.GetFiles(songFolder, "*.osu");
-                            string textFile;
-                            string[] metadata = new string[4]; //title, artist, beatmap creator, tags
-                            string line;
-                            string file = "";
-                            if (textFiles.Length != 0)
+                            textFile = textFiles[0];
+
+
+                            using (StreamReader textReader = new StreamReader(textFile))
                             {
-                                textFile = textFiles[0];
-
-
-                                using (StreamReader textReader = new StreamReader(textFile))
+                                do
                                 {
-                                    do
+                                    line = textReader.ReadLine();
+                                    if (line.Contains("AudioFilename:"))
                                     {
-                                        line = textReader.ReadLine();
-                                        if (line.Contains("AudioFilename:"))
-                                        {
-                                            file = line;
-                                        }
-                                        else if (line.Contains("Title:"))
-                                        {
-                                            metadata[0] = line;
-                                            metadata[0] = metadata[0].Remove(0, "Title:".ToCharArray().Length);
-                                        }
+                                        file = line;
+                                    }
+                                    else if (line.Contains("Title:"))
+                                    {
+                                        metadata[0] = line;
+                                        metadata[0] = metadata[0].Remove(0, "Title:".ToCharArray().Length);
+                                    }
 
-                                        else if (line.Contains("Artist:"))
-                                        {
-                                            metadata[1] = line;
-                                            metadata[1] = metadata[1].Remove(0, "Artist:".ToCharArray().Length);
-                                        }
+                                    else if (line.Contains("Artist:"))
+                                    {
+                                        metadata[1] = line;
+                                        metadata[1] = metadata[1].Remove(0, "Artist:".ToCharArray().Length);
+                                    }
 
-                                        else if (line.Contains("Creator:"))
-                                        {
-                                            metadata[2] = line;
-                                            //    metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length);
-                                        }
+                                    else if (line.Contains("Creator:"))
+                                    {
+                                        metadata[2] = line;
+                                    //    metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length);
+                                    }
 
-                                        else if (line.Contains("Tags:"))
-                                        {
-                                            metadata[3] = line;
-                                        }
+                                    else if (line.Contains("Tags:"))
+                                    {
+                                        metadata[3] = line;
+                                    }
 
-                                    } while (line != "[Difficulty]");
+                                } while (line != "[Difficulty]");
 
-                                }
-                                file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
-                                string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
-                                string newFile = CopyFile(file, fileName, false);
+                            }
+                            file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
+                            string fileName = metadata[0] + file.Substring(file.LastIndexOf("."));
+                            string newFile = CopyFile(file, fileName, false);
 
-                                if (newFile != null) //file copied
-                                {
-                                    ApplyMetadata(newFile, metadata, true);
-                                    fileCounter++;
-                                }
+                            if (newFile != null) //file copied
+                            {
+                                ApplyMetadata(newFile, metadata, true);
+                                fileCounter++;
+                            }
 
-                                else if (newFile == null) //file exists at destination
+                            else if (newFile == null) //file exists at destination 
+                            {
+                                string destinationFile = Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName)));
+                                DateTime fileAccessed = File.GetLastAccessTime(destinationFile); //get when the destination file was accessed
+                                File.SetLastAccessTime(destinationFile, DateTime.Now); //set last access time to now so that source files with the same name are not skipped
+
+                                if (fileAccessed < beginOperationTime && checkBox2.Checked)  //if the file already existed and already-existing files are to be skipped
+                                { skipCounter++; }
+
+                                else if (fileAccessed >= beginOperationTime || checkBox2.Checked == false) //file exists at destination and "Skip files that existed at the destination BEFORE this copy" is false
                                 {
                                     TagLib.File sourceFile = TagLib.File.Create(file);
-                                    TagLib.File destFile = TagLib.File.Create(Path.Combine(DestinationFolder, GetSafePathname(GetSafeFilename(fileName))));
+                                    TagLib.File destFile = TagLib.File.Create(destinationFile);
 
 
                                     if (rememberChoice == true) { }
@@ -181,36 +189,33 @@ namespace Mp3_File_Exporter
 
                                 }
                                 else { throw new GenericException(); }
-
-                            } //if (textFiles.Length != 0)
-
-                            else
-                            {
-                                invalidFolders++;
-                                fileCount--;
                             }
+                            else { throw new GenericException(); }
 
-                        } //foreach (string folder in folders)
+                        } //if (textFiles.Length != 0)
 
-                    } //if (mode == 1)
+                        else
+                        {
+                            invalidFolders++;
+                            fileCount--;
+                        }
+
+                    } //foreach (string folder in folders)
+
+                } //if (mode == 1)
 
 
-                    else if (mode == 2 || mode == 3)
-                    {
-
-                        string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
-                        int[] counter = new int[2];
-                        counter = CopyFiles(files);
-                        fileCount = counter[0];
-                        skipCounter = counter[1];
-
-                    }
-                    MessageBox.Show($"{(fileCount - skipCounter).ToString()} of {fileCount} files copied.\r\n{invalidFolders} invalid folders.");
-                }//try
-                catch
+                else if (mode == 2 || mode == 3)
                 {
-                    MessageBox.Show("An error occured. Unable to find files.", "Error");
+                    
+                    string[] files = Directory.GetFiles(SourceFolder, FileType, SearchOption.AllDirectories);
+                    int[] counter = new int[2];
+                    counter = CopyFiles(files);
+                    fileCount = counter[0];
+                    skipCounter = counter[1];
+
                 }
+                MessageBox.Show($"{(fileCount - skipCounter).ToString()} of {fileCount} files copied.\r\n{invalidFolders} invalid folders.");
             }
             else
             {
@@ -320,8 +325,7 @@ namespace Mp3_File_Exporter
                 return DestinationFile;
             }
 
-            else
-            { throw new GenericException(); }
+            else { throw new GenericException(); }
         }
 
         private void ChangeMode(int Mode1)
@@ -391,6 +395,11 @@ namespace Mp3_File_Exporter
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             if (Directory.Exists(textBox2.Text)) { DestinationFolder = textBox2.Text; }
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
