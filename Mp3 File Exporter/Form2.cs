@@ -48,6 +48,8 @@ namespace Mp3_File_Exporter
             label15.Text = newData.Tag.Comment;
             label17.Text = oldData.Tag.Year.ToString();
             label18.Text = newData.Tag.Year.ToString();
+            label20.Text = oldData.Properties.Duration.ToString();
+            label21.Text = newData.Properties.Duration.ToString();
         }
 
         private void CheckCheckboxStatus(CheckBox checkBox, int index)
@@ -81,5 +83,7 @@ namespace Mp3_File_Exporter
         {
             CheckCheckboxStatus((CheckBox)sender, 1);
         }
+
+
     }
 }

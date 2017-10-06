@@ -33,6 +33,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -51,6 +52,8 @@
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -104,6 +107,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.label19, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.label18, 2, 5);
             this.tableLayoutPanel1.Controls.Add(this.label15, 2, 4);
             this.tableLayoutPanel1.Controls.Add(this.label2, 1, 0);
@@ -122,17 +126,30 @@
             this.tableLayoutPanel1.Controls.Add(this.label13, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.label14, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.label16, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.label20, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.label21, 2, 6);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 6;
+            this.tableLayoutPanel1.RowCount = 7;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(569, 304);
             this.tableLayoutPanel1.TabIndex = 8;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(4, 145);
+            this.label19.Name = "label19";
+            this.label19.Padding = new System.Windows.Forms.Padding(5);
+            this.label19.Size = new System.Drawing.Size(53, 23);
+            this.label19.TabIndex = 18;
+            this.label19.Text = "Length:";
             // 
             // label18
             // 
@@ -317,6 +334,26 @@
             this.label16.TabIndex = 15;
             this.label16.Text = "Year:";
             // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(105, 145);
+            this.label20.Name = "label20";
+            this.label20.Padding = new System.Windows.Forms.Padding(5);
+            this.label20.Size = new System.Drawing.Size(56, 23);
+            this.label20.TabIndex = 19;
+            this.label20.Text = "Property";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(338, 145);
+            this.label21.Name = "label21";
+            this.label21.Padding = new System.Windows.Forms.Padding(5);
+            this.label21.Size = new System.Drawing.Size(56, 23);
+            this.label21.TabIndex = 20;
+            this.label21.Text = "Property";
+            // 
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -372,5 +409,8 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label21;
     }
 }
