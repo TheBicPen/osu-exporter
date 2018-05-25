@@ -75,7 +75,7 @@ namespace Mp3_File_Exporter
                         string songFolder = Path.Combine(SourceFolder, folder);
                         string[] textFiles = Directory.GetFiles(songFolder, "*.osu");
                         string textFile;
-                        string[] metadata = new string[4]; //title, artist, beatmap creator, tags
+                        string[] metadata = new string[5]; //title, artist, beatmap creator, tags, background image
                         string line;
                         string file = "";
                         if (textFiles.Length != 0)
@@ -107,7 +107,7 @@ namespace Mp3_File_Exporter
                                     else if (line.Contains("Creator:"))
                                     {
                                         metadata[2] = line;
-                                    //    metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length);
+                                        //    metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length);
                                     }
 
                                     else if (line.Contains("Tags:"))
@@ -115,7 +115,18 @@ namespace Mp3_File_Exporter
                                         metadata[3] = line;
                                     }
 
-                                } while (line != "[Difficulty]");
+                                    else if (line.Contains("0,0,"))
+                                    {
+                                        metadata[4] = line;
+
+                                        //take only the parts of the string between quotes
+                                        string[] splitLine = new string[3];
+                                        splitLine = metadata[4].Split('"');
+                                        metadata[4] = splitLine[1];
+                                    }
+
+
+                                } while (line != "[TimingPoints]"); //see documentation on the .osu file structure for more detail
 
                             }
                             file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
