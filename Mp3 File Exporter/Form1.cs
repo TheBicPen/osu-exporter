@@ -197,6 +197,7 @@ namespace Mp3_File_Exporter
                             }
                             catch (Exception InvalidFileException)
                             {
+                                skipCounter++;
                                 MessageBox.Show(String.Format("A file specified in the '.osu' file is invalid. {0}", InvalidFileException.Message));
                             }
 
