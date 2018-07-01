@@ -88,47 +88,48 @@ namespace Mp3_File_Exporter
                                 do
                                 {
                                     line = textReader.ReadLine();
-                                    if (line.Contains("AudioFilename:"))
+                                    if (line.StartsWith("AudioFilename:"))
                                     {
                                         file = line;
                                     }
-                                    else if (line.Contains("Title:"))
+                                    else if (line.StartsWith("Title:"))
                                     {
                                         metadata[0] = line; //song title
                                         metadata[0] = metadata[0].Remove(0, "Title:".ToCharArray().Length);
                                     }
 
-                                    else if (line.Contains("Artist:"))
+                                    else if (line.StartsWith("Artist:"))
                                     {
                                         metadata[1] = line; //song artist
                                         metadata[1] = metadata[1].Remove(0, "Artist:".ToCharArray().Length);
                                     }
 
-                                    else if (line.Contains("Creator:"))
+                                    else if (line.StartsWith("Creator:"))
                                     {
                                         metadata[2] = line; //beatmap creator
                                         //    metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length); 
                                     }
 
-                                    else if (line.Contains("Tags:"))
+                                    else if (line.StartsWith("Tags:"))
                                     {
-                                        metadata[3] = line; // beatmap tags
+                                        metadata[3] = line; //beatmap tags
                                     }
 
-                                    else if (line.Contains("0,0,"))
+                                    else if (line.StartsWith("0,0,"))
                                     {
-                                        metadata[4] = line; //beatmap background image file name
+                                        metadata[4] = line; //beatmap background image file path
 
                                         //take only the parts of the string between quotes
                                         string[] splitLine = new string[3];
                                         splitLine = metadata[4].Split('"');
-                                        metadata[4] = splitLine[1];
+                                        metadata[4] = songFolder + "\\" + splitLine[1];
                                     }
 
 
-                                } while (line != "[TimingPoints]"); 
+                                } while (line != "[TimingPoints]");
                                 /*end file read when the timing section is reached.
-                                see documentation on the .osu file structure for more detail*/
+                                see documentation on the .osu file structure for more detail
+                                "https://osu.ppy.sh/help/wiki/osu!_File_Formats/Osu_(file_format)" */
 
                             }
                             file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
@@ -257,7 +258,23 @@ namespace Mp3_File_Exporter
             TagLib.File musicFile = TagLib.File.Create(file);
             musicFile.Tag.Title = metadata[0];
             musicFile.Tag.Performers = new string[] { metadata[1] };
-            musicFile.Tag.Comment = musicFile.Tag.Comment + metadata[2] + metadata[3];
+            musicFile.Tag.Comment += metadata[2] + metadata[3];
+
+            TagLib.IPicture[] pictures = new TagLib.IPicture[musicFile.Tag.Pictures.Length + 1];
+
+            try
+            {
+                pictures[pictures.Length - 1] = new TagLib.Picture(metadata[4]);
+                musicFile.Tag.Pictures = pictures;
+            }
+
+            catch (Exception PictureException)
+            {
+                MessageBox.Show(String.Format("There was an issue setting the image. {0}", PictureException.Message), file);
+            }
+
+
+
             if(save) { musicFile.Save(); }
         }
 
