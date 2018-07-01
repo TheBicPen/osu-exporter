@@ -94,30 +94,30 @@ namespace Mp3_File_Exporter
                                     }
                                     else if (line.Contains("Title:"))
                                     {
-                                        metadata[0] = line;
+                                        metadata[0] = line; //song title
                                         metadata[0] = metadata[0].Remove(0, "Title:".ToCharArray().Length);
                                     }
 
                                     else if (line.Contains("Artist:"))
                                     {
-                                        metadata[1] = line;
+                                        metadata[1] = line; //song artist
                                         metadata[1] = metadata[1].Remove(0, "Artist:".ToCharArray().Length);
                                     }
 
                                     else if (line.Contains("Creator:"))
                                     {
-                                        metadata[2] = line;
-                                        //    metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length);
+                                        metadata[2] = line; //beatmap creator
+                                        //    metadata[2] = metadata[2].Remove(0, "Creator:".ToCharArray().Length); 
                                     }
 
                                     else if (line.Contains("Tags:"))
                                     {
-                                        metadata[3] = line;
+                                        metadata[3] = line; // beatmap tags
                                     }
 
                                     else if (line.Contains("0,0,"))
                                     {
-                                        metadata[4] = line;
+                                        metadata[4] = line; //beatmap background image file name
 
                                         //take only the parts of the string between quotes
                                         string[] splitLine = new string[3];
@@ -126,7 +126,9 @@ namespace Mp3_File_Exporter
                                     }
 
 
-                                } while (line != "[TimingPoints]"); //see documentation on the .osu file structure for more detail
+                                } while (line != "[TimingPoints]"); 
+                                /*end file read when the timing section is reached.
+                                see documentation on the .osu file structure for more detail*/
 
                             }
                             file = Path.Combine(songFolder, file.Remove(0, "Audio Filename: ".ToCharArray().Length - 1));
