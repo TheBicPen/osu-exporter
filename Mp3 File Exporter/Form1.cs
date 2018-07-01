@@ -264,11 +264,11 @@ namespace Mp3_File_Exporter
 
             try
             {
-                for(int i = 0; i < musicFile.Tag.Pictures.Length; i++) //add the pictures already present in the music file
+                for(int i = 1; i <= musicFile.Tag.Pictures.Length; i++) //add the pictures already present in the music file
                 {
-                    pictures[i] = musicFile.Tag.Pictures[i];
+                    pictures[i] = musicFile.Tag.Pictures[i - 1];
                 }
-                pictures[pictures.Length - 1] = new TagLib.Picture(metadata[4]);
+                pictures[0] = new TagLib.Picture(metadata[4]);
                 musicFile.Tag.Pictures = pictures;
             }
 
