@@ -444,6 +444,11 @@ namespace Mp3_File_Exporter
         {
 
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public class GenericException : Exception

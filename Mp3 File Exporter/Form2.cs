@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Mp3_File_Exporter
 {
@@ -50,6 +51,11 @@ namespace Mp3_File_Exporter
             label18.Text = newData.Tag.Year.ToString();
             label20.Text = oldData.Properties.Duration.ToString();
             label21.Text = newData.Properties.Duration.ToString();
+
+            MemoryStream MSOld = new MemoryStream(oldData.Tag.Pictures[0].Data.Data);
+            MemoryStream MSNew = new MemoryStream(newData.Tag.Pictures[0].Data.Data);
+            pictureBox1.Image = System.Drawing.Image.FromStream(MSOld);
+            pictureBox2.Image = System.Drawing.Image.FromStream(MSNew);
         }
 
         private void CheckCheckboxStatus(CheckBox checkBox, int index)
