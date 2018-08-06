@@ -15,18 +15,18 @@ namespace Mp3_File_Exporter
     {
         public int[] result = new int[3];
 
-        public Form2(TagLib.File newData, TagLib.File oldData, string[] newMetadata) //metadata: title, artist, beatmap creator, tags
+        public Form2(TagLib.File newData, TagLib.File oldData, string[] newMetadata, bool displayImages) //metadata: title, artist, beatmap creator, tags
         {
             InitializeComponent();
             newData.Tag.Title = newMetadata[0];
             newData.Tag.Performers = new string[] { newMetadata[1] };
             newData.Tag.Comment = newData.Tag.Comment + newMetadata[2] + newMetadata[3]; //apply the new metadata without saving it
-            DisplayInfo(newData, oldData, newMetadata);
+            DisplayInfo(newData, oldData, newMetadata, displayImages);
         }
 
        
 
-        private void DisplayInfo(TagLib.File newData, TagLib.File oldData, string[] newMetadata) //title, performers, album artists, comment, picture
+        private void DisplayInfo(TagLib.File newData, TagLib.File oldData, string[] newMetadata, bool displayImages) //title, performers, album artists, comment, picture
         {
             label5.Text = oldData.Tag.Title;
             label6.Text = newData.Tag.Title;
@@ -52,18 +52,22 @@ namespace Mp3_File_Exporter
             label20.Text = oldData.Properties.Duration.ToString();
             label21.Text = newData.Properties.Duration.ToString();
 
-            try
+            if (displayImages)
             {
-                MemoryStream MSOld = new MemoryStream(oldData.Tag.Pictures[0].Data.Data);
-               // MemoryStream MSNew = new MemoryStream(newData.Tag.Pictures[0].Data.Data); //useless since newData does not contain an image
-                pictureBox1.Image = Image.FromStream(MSOld);
-                // pictureBox2.Image = Image.FromStream(MSNew); //also useless
-                pictureBox2.Image = Image.FromFile(newMetadata[4]);
+                try
+                {
+                    MemoryStream MSOld = new MemoryStream(oldData.Tag.Pictures[0].Data.Data);
+                    // MemoryStream MSNew = new MemoryStream(newData.Tag.Pictures[0].Data.Data); //useless since newData does not contain an image
+                    pictureBox1.Image = Image.FromStream(MSOld);
+                    // pictureBox2.Image = Image.FromStream(MSNew); //also useless
+                    pictureBox2.Image = Image.FromFile(newMetadata[4]);
+                }
+                catch (Exception PictureDisplayException)
+                {
+                    MessageBox.Show(PictureDisplayException.Message);
+                }
             }
-            catch (Exception PictureDisplayException)
-            {
-                MessageBox.Show(PictureDisplayException.Message);
-            }
+            else { }
 
         }
 

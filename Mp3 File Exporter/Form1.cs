@@ -68,6 +68,7 @@ namespace Mp3_File_Exporter
 
                     int choice = 0; //what to do when the file exists at the destination
                     bool rememberChoice = false; //use choice for all files?
+                    bool displayImages = !checkBox1.Checked;
 
                     foreach (string folder in folders)
                     {
@@ -115,7 +116,7 @@ namespace Mp3_File_Exporter
                                         metadata[3] = line; //beatmap tags
                                     }
 
-                                    else if (line.StartsWith("0,0,"))
+                                    else if (line.StartsWith("0,0,") && displayImages)
                                     {
                                         metadata[4] = line; //beatmap background image file path
 
@@ -141,7 +142,7 @@ namespace Mp3_File_Exporter
 
                                 if (newFile != null) //file copied
                                 {
-                                    ApplyMetadata(newFile, metadata, true);
+                                    ApplyMetadata(newFile, metadata, true, displayImages);
                                     fileCounter++;
                                 }
 
@@ -151,10 +152,10 @@ namespace Mp3_File_Exporter
                                     DateTime fileAccessed = File.GetLastAccessTime(destinationFile); //get when the destination file was accessed
                                     File.SetLastAccessTime(destinationFile, DateTime.Now); //set last access time to now so that source files with the same name are not skipped
 
-                                    if (fileAccessed < beginOperationTime && checkBox2.Checked)  //if the file already existed and already-existing files are to be skipped
+                                    if (fileAccessed < beginOperationTime && checkBox2.Checked)  //if the file already existed AND already-existing files are to be skipped
                                     { skipCounter++; }
 
-                                    else if (fileAccessed >= beginOperationTime || checkBox2.Checked == false) //file exists at destination and "Skip files that existed at the destination BEFORE this copy" is false
+                                    else if (fileAccessed >= beginOperationTime || checkBox2.Checked == false) //if the file was only accessed after the copy operation started, OR if existing files should be overwritten anyway
                                     {
                                         TagLib.File sourceFile = TagLib.File.Create(file);
                                         TagLib.File destFile = TagLib.File.Create(destinationFile);
@@ -165,7 +166,7 @@ namespace Mp3_File_Exporter
                                         else if (rememberChoice == false)
                                         {
 
-                                            var overwrite = PromptOverwrite(sourceFile, destFile, metadata);
+                                            var overwrite = PromptOverwrite(sourceFile, destFile, metadata, displayImages);
                                             choice = overwrite[0];
 
                                             if (overwrite[1] == 1) //use this choice for all files
@@ -183,7 +184,7 @@ namespace Mp3_File_Exporter
                                                 break;
 
                                             case 2:         //force copying the file ie. overwrite
-                                                ApplyMetadata(CopyFile(file, fileName, true), metadata, true);
+                                                ApplyMetadata(CopyFile(file, fileName, true), metadata, true, displayImages);
                                                 fileCounter++;
                                                 break;
 
@@ -197,7 +198,7 @@ namespace Mp3_File_Exporter
                                                     check = CopyFile(file, newName, false);
                                                     counter++;
                                                 } while (check == null);
-                                                ApplyMetadata(check, metadata, true);
+                                                ApplyMetadata(check, metadata, true, displayImages);
                                                 fileCounter++;
                                                 break;
                                             default:
@@ -246,38 +247,39 @@ namespace Mp3_File_Exporter
             }
         }
 
-        private int[] PromptOverwrite(TagLib.File newFileData, TagLib.File existingFileData, string[] metadata)
+        private int[] PromptOverwrite(TagLib.File newFileData, TagLib.File existingFileData, string[] metadata, bool displayImages)
         {
-            Form2 form2 = new Form2(newFileData, existingFileData, metadata);
+            Form2 form2 = new Form2(newFileData, existingFileData, metadata, displayImages);
             form2.ShowDialog();
             return form2.result;
         } 
 
-        public void ApplyMetadata(string file, string[] metadata, bool save)
+        public void ApplyMetadata(string file, string[] metadata, bool save, bool setImage)
         {
             TagLib.File musicFile = TagLib.File.Create(file);
             musicFile.Tag.Title = metadata[0];
             musicFile.Tag.Performers = new string[] { metadata[1] };
             musicFile.Tag.Comment += metadata[2] + metadata[3];
 
-            TagLib.IPicture[] pictures = new TagLib.IPicture[musicFile.Tag.Pictures.Length + 1];
-
-            try
+            if (setImage)
             {
-                for(int i = 1; i <= musicFile.Tag.Pictures.Length; i++) //add the pictures already present in the music file
+                TagLib.IPicture[] pictures = new TagLib.IPicture[musicFile.Tag.Pictures.Length + 1];
+
+                try
                 {
-                    pictures[i] = musicFile.Tag.Pictures[i - 1];
+                    for (int i = 1; i <= musicFile.Tag.Pictures.Length; i++) //add the pictures already present in the music file
+                    {
+                        pictures[i] = musicFile.Tag.Pictures[i - 1];
+                    }
+                    pictures[0] = new TagLib.Picture(metadata[4]);
+                    musicFile.Tag.Pictures = pictures;
                 }
-                pictures[0] = new TagLib.Picture(metadata[4]);
-                musicFile.Tag.Pictures = pictures;
+
+                catch (Exception PictureException)
+                {
+                    MessageBox.Show(String.Format("There was an issue setting the image. {0}", PictureException.Message), file);
+                }
             }
-
-            catch (Exception PictureException)
-            {
-                MessageBox.Show(String.Format("There was an issue setting the image. {0}", PictureException.Message), file);
-            }
-
-
 
             if(save) { musicFile.Save(); }
         }
