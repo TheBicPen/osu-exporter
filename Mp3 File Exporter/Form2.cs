@@ -21,12 +21,12 @@ namespace Mp3_File_Exporter
             newData.Tag.Title = newMetadata[0];
             newData.Tag.Performers = new string[] { newMetadata[1] };
             newData.Tag.Comment = newData.Tag.Comment + newMetadata[2] + newMetadata[3]; //apply the new metadata without saving it
-            DisplayInfo(newData, oldData);
+            DisplayInfo(newData, oldData, newMetadata);
         }
 
        
 
-        private void DisplayInfo(TagLib.File newData, TagLib.File oldData) //title, performers, album artists, comment
+        private void DisplayInfo(TagLib.File newData, TagLib.File oldData, string[] newMetadata) //title, performers, album artists, comment, picture
         {
             label5.Text = oldData.Tag.Title;
             label6.Text = newData.Tag.Title;
@@ -52,10 +52,19 @@ namespace Mp3_File_Exporter
             label20.Text = oldData.Properties.Duration.ToString();
             label21.Text = newData.Properties.Duration.ToString();
 
-            MemoryStream MSOld = new MemoryStream(oldData.Tag.Pictures[0].Data.Data);
-            MemoryStream MSNew = new MemoryStream(newData.Tag.Pictures[0].Data.Data);
-            pictureBox1.Image = System.Drawing.Image.FromStream(MSOld);
-            pictureBox2.Image = System.Drawing.Image.FromStream(MSNew);
+            try
+            {
+                MemoryStream MSOld = new MemoryStream(oldData.Tag.Pictures[0].Data.Data);
+               // MemoryStream MSNew = new MemoryStream(newData.Tag.Pictures[0].Data.Data); //useless since newData does not contain an image
+                pictureBox1.Image = Image.FromStream(MSOld);
+                // pictureBox2.Image = Image.FromStream(MSNew); //also useless
+                pictureBox2.Image = Image.FromFile(newMetadata[4]);
+            }
+            catch (Exception PictureDisplayException)
+            {
+                MessageBox.Show(PictureDisplayException.Message);
+            }
+
         }
 
         private void CheckCheckboxStatus(CheckBox checkBox, int index)
