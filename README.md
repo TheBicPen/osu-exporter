@@ -15,4 +15,4 @@ It also has a secondary function: search for files of a given type within a fold
 
 
 
-Do NOT use this program to aid in the distribution of copyrighted content. Doing so would only hurt the game community we know and love.
+Do NOT use this program to distribute copyright-protected music.
